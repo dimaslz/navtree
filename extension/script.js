@@ -80,7 +80,8 @@ function clickEvent(element, node) {
             
             $('#preview #preview-content').html(content);
             $('#preview #preview-title').text(node.path)
-            $('#preview #preview-content pre code').text(window.atob(data.content))
+            // $('#preview #preview-content pre code').text(window.atob(data.content))
+            $('#preview #preview-content pre code').text(decodeURIComponent(escape(window.atob( data.content ))))
             
             hljs.initHighlightingOnLoad();
             // hljs.configure({useBR: true});

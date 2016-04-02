@@ -1,6 +1,10 @@
+[![Analytics](https://ga-beacon.appspot.com/UA-75897819-1/navtree/readme)](https://github.com/dimaslz/navtree)
+
 #NavTree for Github
 This extensión is for improve the navigation in github only when we need show code to learn, 
 and avoid to clone it only for can show the code more quickly.
+
+Install from chrome store [https://chrome.google.com/webstore/detail/navtree-for-github/hehmfcekejdeohjjckmalfemepbbafbe](https://chrome.google.com/webstore/detail/navtree-for-github/hehmfcekejdeohjjckmalfemepbbafbe)
 
 ##How to use
 The use is simple, once you have the extension installed, when you access to github, you can see an icon in bottom-right corner.
