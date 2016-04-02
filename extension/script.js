@@ -80,7 +80,6 @@ function clickEvent(element, node) {
             
             $('#preview #preview-content').html(content);
             $('#preview #preview-title').text(node.path)
-            // $('#preview #preview-content pre code').text(window.atob(data.content))
             $('#preview #preview-content pre code').text(decodeURIComponent(escape(window.atob( data.content ))))
             
             hljs.initHighlightingOnLoad();
@@ -237,6 +236,11 @@ $.ajax({
       if(e.keyCode === 69 && e.ctrlKey) {
         $('#editor').toggleClass('show-editor');
         $('body').toggleClass('editor-open');
+      }
+      
+      
+      if(e.keyCode === 32 && $('#editor')[0].className === 'show-editor') {
+        $('#editor').toggleClass('show-editor');
       }
     })
   },
