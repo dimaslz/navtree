@@ -1,47 +1,46 @@
 [![Analytics](https://ga-beacon.appspot.com/UA-75897819-1/navtree/readme)](https://github.com/dimaslz/navtree)
 
 #NavTree for Github
-This extensión is for improve the navigation in github only when we need show code to learn, 
-and avoid to clone it only for can show the code more quickly.
+Displays the repo structure and file contents quickly.
+This extension is saves you time when you want to take a peek at the repo code and you don't want to navigate back and forth between directories in the GitHub interface and losing the context of the code. 
 
-Install from chrome store [https://chrome.google.com/webstore/detail/navtree-for-github/hehmfcekejdeohjjckmalfemepbbafbe](https://chrome.google.com/webstore/detail/navtree-for-github/hehmfcekejdeohjjckmalfemepbbafbe)
+![NavTree in action](ext.gif "NavTree in action")
 
-##How to use
-The use is simple, once you have the extension installed, when you access to github, you can see an icon in bottom-right corner.
-If you do click in this icon, the editor nav (Enav) is open and you can use the navigation like any editor.
+## Setup 
+* Clone this and load the unpacked extension into Chrome or [install through the Chrome Web Store](http://google.com)
 
-I you need hide that, just press again the icon and Enav will desappear.
+## How to use
+* Install the extension
+* Navigate to a GitHub repo.
+* Click the new icon in the bottom-right corner or use the `CTRL+E` keyboard shortcut.
+* NavTree pops up
+* To close the overlay 
+* To exit, click on the icon again.
 
-Following some captures!
+## Caveats
+* This a quick n' dirty proof of concept. The extension is using the free GitHub API quota. If you make heavy use of it, it may get blocked for a day. I'll add GitHub authentication sometime in the future to prevent this.
+* The code is nothing to be proud of, I just wanted to get this out there and see if anybody else finds this extension useful. 
 
-##Note about use
-For start, the extension is workin with github API for free, when there are a lot request by day, 
-this is bloked to the next day.
-
-Later I will try to add github authentication to solve that.
-
-##Note about code
-I know that the code is a little poor, but I wanted to get the funcionality version (WIP), the code will be improved, don't worry.
-
-The Highlight is by [https://highlightjs.org](https://highlightjs.org)
-
-##TODO
-* Add Github API integration
-* Try to do for Bitbucket
-* Improve code
-* Improve tree view with icons
-* Center images
-* Can open tabs with differents files
-* Improve icon
+## TODO
+* Add Github API integration.
+* Try to implement it for Bitbucket too.
+* Improve code.
+* Add file type icons on the tree view.
+* Center images.
+* Open multiple files in different tabs.
+* Improve icon.
 
 ## Colaboration
-This project is open source, so please, feel free to send me pull request or new ideas and I will try to add it with your recpective mention.
+This project is open source, so please, feel free to send in pull request or file issues with feature requests, I will try to implement them and give you proper credit.
+
+## Acknowledgements
+* Syntax highlighting done with [https://highlightjs.org](https://highlightjs.org)
 
 ## License
 
 The MIT License (MIT)
 
-Copyright (c) 2015 Dimas López <me@dimaslz.io>
+Copyright (c) 2016 Dimas López <me@dimaslz.io>
 [@dimaslz](http://twitter.com/dimaslz) [http://dimaslz.io](http://dimaslz.io) · [http://dimaslz.com](http://dimaslz.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
