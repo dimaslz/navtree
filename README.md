@@ -13,7 +13,7 @@ Screenshots coming soon.
 * Click the new icon in the bottom-right corner or use the `CTRL+E` keyboard shortcut.
 * NavTree pops up
 * To close the overlay 
-* To exit, click on the icon again or use `ESC`.
+* To exit, click on the icon again.
 
 ## Caveats
 * This a quick n' dirty proof of concept. The extension is using the free GitHub API quota. If you make heavy use of it, it may get blocked for a day. I'll add GitHub authentication sometime in the future to prevent this.
