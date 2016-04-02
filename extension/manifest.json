@@ -1,0 +1,29 @@
+{
+  "name": "NavTree for Github",
+  "author": "Dimas López Zurita (dimaslz) | me@dimaslz.io",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "description": "NavTree for Github is a extension for improve the navigation between files on Github.",
+  "web_accessible_resources": [
+    "*.png"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/*/*"],
+      "css": [
+        "agate.css", 
+        "style.css"
+      ],
+      "js": [
+        "highlight.pack.js",
+        "jquery.min.js", 
+        "script.js"
+        ]
+    }
+  ],
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  }
+}

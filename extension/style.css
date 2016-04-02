@@ -1,0 +1,166 @@
+body.editor-open {
+    overflow: hidden;
+}
+
+#editor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+}
+
+.show-editor {
+  display: block !important;
+}
+
+#preview {
+    width: 100%;
+    height: 100%;
+    background: rgba(51, 51, 51, 0.9);
+    position: absolute;
+    z-index: 999;
+    color: white;
+    overflow-x: auto;
+    padding: 1px;
+    padding-left: 301px;
+}
+#preview pre {
+  height: 100%;
+}
+#preview pre code {
+  height: 100%;
+}
+#tree {
+  position: absolute;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 300px;
+    max-width: 300px;
+    background: rgba(51, 51, 51, 0.9);
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+#tree ul, #tree ul ul {
+      display: inline-table;
+  width: 100%;
+  list-style-type: none;
+  /*background: url(vline.png) repeat-y;*/
+  margin: 0;
+  padding: 0;
+}
+   
+#tree ul ul {
+  margin-left: 10px;
+  display: none;
+}
+
+#tree ul:first-child ul {
+  margin-left: 10px;
+}
+
+#tree ul li {
+  margin: 0;
+  padding: 0 12px;
+  line-height: 20px;
+  /*background: url(node.png) no-repeat;*/
+  color: white;
+  cursor: pointer;
+}
+
+#tree ul li a {
+  display: block
+}
+#tree ul li a:hover {
+  color: white;
+  text-decoration: none;
+}
+
+/*#tree ul li:last-child:hover {
+  background: cornflowerblue
+}*/
+
+#tree ul li:last-child {
+  /*background: url(node.png) no-repeat !important; */
+}
+
+#tree .black {
+  display: block;
+}
+
+.over {
+  background: cornflowerblue !important;
+}
+
+.hide {
+  display: none !important;
+}
+
+#button-hide {
+  position: fixed;
+  cursor: pointer;
+  right: 0;
+  bottom: 0;
+  width: 30px;
+  margin: 10px;
+  z-index: 99999;
+}
+
+#preview-title {
+  font-size: 25px;
+  padding-left: 10px;
+  position: fixed;
+}
+
+#preview-content {
+  height: calc(100% - 40px);
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+}
+
+
+/* LOADER */
+.loader-wrapper {
+  display: block;
+  position: fixed;
+  height: 100%;
+  width: calc(100% - 300px);
+  /*margin-left: 300px;*/
+  background-color: rgba(51, 51, 51);
+  top: 0;
+  right: 0;
+}
+.loader-wrapper .loader {
+  width: 64px;
+  height: 64px;
+  position: absolute;
+  bottom: 50%;
+  margin-bottom: -32px;
+  left: 50%;
+  margin-left: -32px;
+}
+.loader-wrapper .loader .spinner {
+  width: 64px;
+  height: 64px;
+  display: block;
+  position: relative;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  border-top: solid transparent;
+  border-bottom: solid transparent;
+  animation: loaderRotate 1s ease;
+  animation-iteration-count: infinite;
+}
+@keyframes loaderRotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
