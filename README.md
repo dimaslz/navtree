@@ -8,7 +8,7 @@ This extension is saves you time when you want to take a peek at the repo code a
 ![NavTree in action](ext.gif "NavTree in action")
 
 ## Setup 
-* Clone this and load the unpacked extension into Chrome or [install through the Chrome Web Store](http://google.com)
+* Clone this and load the unpacked extension into Chrome or [install through the Chrome Web Store](https://chrome.google.com/webstore/detail/navtree-for-github/hehmfcekejdeohjjckmalfemepbbafbe)
 
 ## How to use
 * Install the extension
