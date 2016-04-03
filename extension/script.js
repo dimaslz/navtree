@@ -238,8 +238,7 @@ $.ajax({
         $('body').toggleClass('editor-open');
       }
       
-      
-      if(e.keyCode === 32 && $('#editor')[0].className === 'show-editor') {
+      if(e.keyCode === 27 && $('#editor')[0].className === 'show-editor') {
         $('#editor').toggleClass('show-editor');
       }
     })
