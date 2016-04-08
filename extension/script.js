@@ -1,7 +1,24 @@
 var n = 0;
 var counter = 0;
 var collection = [];
+var editorVisible = false;
 // $("body").addClass("editor-open");
+
+// document.addEventListener('DOMContentLoaded', function () {
+//   chrome.storage.sync.get({
+//     type: 'overlay',
+//     theme: dark
+//   }, function(items) {
+//     // document.getElementById('like').checked = items.likesColor;
+//   });
+
+  // console.log('dfasdfasdf', document.querySelectorAll('#type-form input'))
+  var inputs = document.querySelectorAll('#type-form input');
+  for(var i = 0; i < inputs.length; i++) {
+    console.log('dfasdfasdf', document.querySelectorAll('#type-form input'))
+    inputs[i].addEventListener('click', setType);
+  }
+// });
 
 /**
  * Arraytor
@@ -59,7 +76,7 @@ function clickEvent(element, node) {
   if(/[\.A-Za-z0-9-_]+\..*?$/ig.test(node.path) || !node.subNodes) {
       element.addEventListener('click', function(e) {
         $('.loader-wrapper').show();
-        var self = this;
+        var self = this
         $.ajax({
           url: self.getAttribute('url-data'),
           dataType: 'json',
@@ -113,8 +130,13 @@ function createTree(domElement, treeNode) {
   for (n in treeNode) {
     // Create an <li> and <a> element
     li = document.createElement('li');
+    if(/[\.A-Za-z0-9-_]+\..*?$/ig.test(treeNode[n].path) || !treeNode[n].subNodes) {
+      li.className = 'file';
+    } else {
+      li.className = 'close';
+    }
     a = document.createElement('a');
-    a.href = '#';
+    // a.href = '#';
     a.setAttribute('url-data', treeNode[n].url)
     
     clickEvent(a, treeNode[n]);
@@ -203,18 +225,20 @@ $.ajax({
     var lis = document.querySelectorAll('#tree li');
     for(var i = 0; i < lis.length; i++) {
       lis[i].addEventListener('click', function(e) {
+        console.log(this)
+        $(this).toggleClass('open');
         $(this).find('ul').eq(0).toggleClass('black')
         e.stopPropagation();
       });
       
-      lis[i].addEventListener('mouseenter', function(e) {
-        $(this).toggleClass('over');
-        e.stopPropagation();
-      });
-      lis[i].addEventListener('mouseleave', function(e) {
-        $(this).toggleClass('over');
-        e.stopPropagation();
-      });
+      // lis[i].addEventListener('mouseenter', function(e) {
+      //   $(this).toggleClass('over');
+      //   e.stopPropagation();
+      // });
+      // lis[i].addEventListener('mouseleave', function(e) {
+      //   $(this).toggleClass('over');
+      //   e.stopPropagation();
+      // });
     }
     
     
@@ -234,8 +258,28 @@ $.ajax({
     
     document.addEventListener('keydown', function(e) {
       if(e.keyCode === 69 && e.ctrlKey) {
-        $('#editor').toggleClass('show-editor');
-        $('body').toggleClass('editor-open');
+        $('.file-wrap table.files').toggle();
+        $('#editor').toggleClass('disable-scroll');
+        if(editorVisible) {
+          $('#editor').hide();
+          // $('#editor').toggleClass('show-editor');  
+        } else {
+          $('.file-wrap table.files').before(editorElement)
+        }
+        
+        chrome.storage.sync.get({
+          type: 'overlay',
+          theme: 'dark'
+        }, function(items) {
+          console.log(items)
+          // document.getElementById('like').checked = items.likesColor;
+        });
+        
+        editorVisible = !editorVisible;
+        // $('.file-wrap table.files').before(editorElement)
+        // $('#editor').toggleClass('show-editor');
+        // $('.file-wrap').append('#editor')
+        // $('body').toggleClass('editor-open');
       }
       
       if(e.keyCode === 27 && $('#editor')[0].className === 'show-editor') {
