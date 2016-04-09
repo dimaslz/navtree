@@ -2,6 +2,9 @@ var n = 0;
 var counter = 0;
 var collection = [];
 var editorVisible = false;
+chrome.storage.sync.set({
+  active: false
+});
 // $("body").addClass("editor-open");
 
 // document.addEventListener('DOMContentLoaded', function () {
@@ -259,7 +262,7 @@ $.ajax({
     document.addEventListener('keydown', function(e) {
       if(e.keyCode === 69 && e.ctrlKey) {
         $('.file-wrap table.files').toggle();
-        $('#editor').toggleClass('disable-scroll');
+        $('#editor').toggleClass('show-editor');
         if(editorVisible) {
           $('#editor').hide();
           // $('#editor').toggleClass('show-editor');  

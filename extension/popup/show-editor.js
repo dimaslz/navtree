@@ -1,5 +1,5 @@
-$('.file-wrap table.files').toggle();
-$('#editor').toggleClass('show-editor');
+$('.file-wrap table.files').hide();
+$('#editor').addClass('show-editor');
 $('.file-wrap table.files').before($('#editor'))
 
 chrome.storage.sync.get({
@@ -7,6 +7,7 @@ chrome.storage.sync.get({
   theme: 'dark'
 }, function(items) {
   if(items.type === 'overlay') {
-    $('body').toggleClass('disable-scroll');
+    $('#editor').addClass('overlay');
+    $('body').addClass('disable-scroll');
   }
 });

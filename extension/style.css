@@ -26,7 +26,7 @@ body.disable-scroll {
 
 /*// OVERLAY*/
 #editor.overlay {
-  position: absolute;
+  position: fixed;
   z-index: 16;
   top: 0;
   left: 0;
@@ -52,6 +52,9 @@ body.disable-scroll {
   color: #4078c0;
   position: absolute;
   top: 0;
+  background: rgba(248, 248, 248, 0.95);
+  height: 40px;
+  border-bottom: 1px solid rgba(204, 204, 204, 0.4);
 }
 
 #editor #preview #preview-content {
@@ -75,7 +78,7 @@ body.disable-scroll {
 #editor #tree {
   width: 30%;
   max-width: 30%;
-  background: rgba(248, 248, 248, 0.8);
+  background: rgba(248, 248, 248, 0.95);
   height: 100%;
   float: left;
   border-right: 1px solid rgba(204, 204, 204, 0.4);
@@ -108,13 +111,20 @@ body.disable-scroll {
 #editor #tree ul li {
   margin: 0;
   padding: 0 12px;
-  display: table-footer-group;
+  /*display: table-footer-group;*/
   line-height: 20px;
   color: white;
   cursor: pointer;
   padding: 0px 15px;
-  padding-left: 20px;
+  padding-left: 0;
+  display: block;
 }
+
+#editor #tree ul li.file {
+  border: 0;
+  border-radius: 0;
+}
+
 #editor #tree ul li.close {
   background: url('chrome-extension://@dnonnbeiomdlhmbglfffkmcifnojbmfk/images/close.png') no-repeat;
   background-position: 0px 3px;

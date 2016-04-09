@@ -1,2 +1,2 @@
-$('#editor').toggleClass('overlay');
-$('body').toggleClass('disable-scroll');
+$('#editor').removeClass('overlay');
+$('body').removeClass('disable-scroll');
