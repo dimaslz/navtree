@@ -1,4 +1,3 @@
-$('.file-wrap table.files').hide();
 $('#editor').addClass('show-editor');
 $('.file-wrap table.files').before($('#editor'))
 
@@ -9,5 +8,7 @@ chrome.storage.sync.get({
   if(items.type === 'overlay') {
     $('#editor').addClass('overlay');
     $('body').addClass('disable-scroll');
+  } else {
+    $('.file-wrap table.files').hide();
   }
 });

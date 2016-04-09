@@ -40,12 +40,11 @@ document.addEventListener('DOMContentLoaded', function () {
     
     chrome.storage.sync.set({
       active: this.checked
-    }, function() {});
-  })
+    });
+  });
     
   for(var i = 0; i<types.length; i++) {
     types[i].addEventListener('click', function() {
-      console.log(this)
       if(this.value === 'overlay') {
         chrome.tabs.executeScript(null, {
           file: "popup/overlay-on.js"

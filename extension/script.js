@@ -260,33 +260,66 @@ $.ajax({
     document.body.appendChild(bubble);
     
     document.addEventListener('keydown', function(e) {
-      if(e.keyCode === 69 && e.ctrlKey) {
-        $('.file-wrap table.files').toggle();
-        $('#editor').toggleClass('show-editor');
-        if(editorVisible) {
-          $('#editor').hide();
-          // $('#editor').toggleClass('show-editor');  
-        } else {
-          $('.file-wrap table.files').before(editorElement)
-        }
+      // if(e.keyCode === 69 && e.ctrlKey) {
         
+      //   $('.file-wrap table.files').toggle();
+      //   $('#editor').toggleClass('show-editor');
+      //   if(editorVisible) {
+      //     $('#editor').hide();
+      //     // $('#editor').toggleClass('show-editor');  
+      //   } else {
+      //     $('.file-wrap table.files').before(editorElement)
+      //   }
+        
+      //   chrome.storage.sync.get({
+      //     type: 'overlay',
+      //     theme: 'dark'
+      //   }, function(items) {
+      //     console.log(items)
+      //   });
+        
+      //   editorVisible = !editorVisible;
+      // }
+      
+      chrome.storage.sync.get({
+          active: false
+        }, function(items) {
+          if(!items.active && e.keyCode === 69 && e.ctrlKey) {
+            chrome.storage.sync.set({
+              active: true
+            });
+            
+            $('#editor').addClass('show-editor');
+            $('.file-wrap table.files').before($('#editor'))
+
+            chrome.storage.sync.get({
+              type: 'overlay',
+              theme: 'dark'
+            }, function(items) {
+              if(items.type === 'overlay') {
+                $('#editor').addClass('overlay');
+                $('body').addClass('disable-scroll');
+              }
+            });
+          }
+        });
+      
+      if(e.keyCode === 27 && $('#editor').hasClass('show-editor')) {
+        $('.file-wrap table.files').show();
+        $('#editor').removeClass('show-editor');
+
         chrome.storage.sync.get({
           type: 'overlay',
           theme: 'dark'
         }, function(items) {
-          console.log(items)
-          // document.getElementById('like').checked = items.likesColor;
+          if(items.type === 'overlay') {
+            $('body').removeClass('disable-scroll');
+          }
         });
         
-        editorVisible = !editorVisible;
-        // $('.file-wrap table.files').before(editorElement)
-        // $('#editor').toggleClass('show-editor');
-        // $('.file-wrap').append('#editor')
-        // $('body').toggleClass('editor-open');
-      }
-      
-      if(e.keyCode === 27 && $('#editor')[0].className === 'show-editor') {
-        $('#editor').toggleClass('show-editor');
+        chrome.storage.sync.set({
+          active: false
+        });
       }
     })
   },
