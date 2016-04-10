@@ -5,7 +5,14 @@ Displays the repo structure and file contents quickly.
 
 This extension is saves you time when you want to take a peek at the repo code and you don't want to navigate back and forth between directories in the GitHub interface and losing the context of the code. 
 
-![NavTree in action](ext.gif "NavTree in action")
+##Screenshots
+
+![NavTree in action screenshot 1](screenshots/screen1.png "NavTree in action")
+![NavTree in action screenshot 4](screenshots/screen4.png "NavTree in action")
+![NavTree in action screenshot 6](screenshots/screen6.png "NavTree in action")
+
+##Version
+Current version 1.1.2
 
 ## Setup 
 * Clone this and load the unpacked extension into Chrome or [install through the Chrome Web Store](https://chrome.google.com/webstore/detail/navtree-for-github/hehmfcekejdeohjjckmalfemepbbafbe)
@@ -13,10 +20,10 @@ This extension is saves you time when you want to take a peek at the repo code a
 ## How to use
 * Install the extension
 * Navigate to a GitHub repo.
-* Click the new icon in the bottom-right corner or use the `CTRL+E` keyboard shortcut.
+* Click the new icon in the bottom-right corner, click on extention icon or use the `CTRL+E` keyboard shortcut.
 * NavTree pops up
 * To close the overlay 
-* To exit, click on the icon again or use `ESC`.
+* To exit, click on the icon again, click on extention icon to use manually or use `ESC`.
 
 ## Caveats
 * This a quick n' dirty proof of concept. The extension is using the free GitHub API quota. If you make heavy use of it, it may get blocked for a day. I'll add GitHub authentication sometime in the future to prevent this.

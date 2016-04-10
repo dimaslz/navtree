@@ -252,34 +252,54 @@ $.ajax({
     bubble.src = chrome.extension.getURL("images/bubble.png");
     bubble.id = 'button-hide';
     bubble.addEventListener('click', function(value, index) {
-      $('#editor').toggleClass('show-editor');
-      $('body').toggleClass('editor-open');
+      chrome.storage.sync.get({
+          active: false
+        }, function(items) {
+          if(!items.active) {
+            chrome.storage.sync.set({
+              active: true
+            });
+            
+            $('#editor').addClass('show-editor');
+            $('.file-wrap table.files').before($('#editor'))
+
+            chrome.storage.sync.get({
+              type: 'overlay',
+              theme: 'dark'
+            }, function(items) {
+              if(items.type === 'overlay') {
+                $('#editor').addClass('overlay');
+                $('body').addClass('disable-scroll');
+              } else {
+                $('.file-wrap table.files').hide();
+              }
+            });
+          } else {
+            $('#editor').removeClass('show-editor');
+
+            chrome.storage.sync.get({
+              type: 'overlay',
+              theme: 'dark'
+            }, function(items) {
+              if(items.type === 'overlay') {
+                $('body').removeClass('disable-scroll');
+              } else {
+                $('.file-wrap table.files').show();
+              }
+            });
+            
+            chrome.storage.sync.set({
+              active: false
+            });
+          }
+        }
+      );
     });
     
     $('.loader-wrapper').hide();
     document.body.appendChild(bubble);
     
     document.addEventListener('keydown', function(e) {
-      // if(e.keyCode === 69 && e.ctrlKey) {
-        
-      //   $('.file-wrap table.files').toggle();
-      //   $('#editor').toggleClass('show-editor');
-      //   if(editorVisible) {
-      //     $('#editor').hide();
-      //     // $('#editor').toggleClass('show-editor');  
-      //   } else {
-      //     $('.file-wrap table.files').before(editorElement)
-      //   }
-        
-      //   chrome.storage.sync.get({
-      //     type: 'overlay',
-      //     theme: 'dark'
-      //   }, function(items) {
-      //     console.log(items)
-      //   });
-        
-      //   editorVisible = !editorVisible;
-      // }
       
       chrome.storage.sync.get({
           active: false
@@ -305,15 +325,15 @@ $.ajax({
         });
       
       if(e.keyCode === 27 && $('#editor').hasClass('show-editor')) {
-        $('.file-wrap table.files').show();
         $('#editor').removeClass('show-editor');
-
         chrome.storage.sync.get({
           type: 'overlay',
           theme: 'dark'
         }, function(items) {
           if(items.type === 'overlay') {
             $('body').removeClass('disable-scroll');
+          } else {
+            $('.file-wrap table.files').show();
           }
         });
         
