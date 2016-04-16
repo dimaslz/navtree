@@ -12,7 +12,7 @@ This extension is saves you time when you want to take a peek at the repo code a
 ![NavTree in action screenshot 6](screenshots/screen6.png "NavTree in action")
 
 ##Version
-Current version 1.1.2
+Current version 1.2.0
 
 ## Setup 
 * Clone this and load the unpacked extension into Chrome or [install through the Chrome Web Store](https://chrome.google.com/webstore/detail/navtree-for-github/hehmfcekejdeohjjckmalfemepbbafbe)
@@ -24,6 +24,10 @@ Current version 1.1.2
 * NavTree pops up
 * To close the overlay 
 * To exit, click on the icon again, click on extention icon to use manually or use `ESC`.
+
+## Allow private repos
+To can use NavTree in private repos, this app needs a Token from Github [https://github.com/settings/tokens](https://github.com/settings/tokens) with following scopes
+![Github scopes for NavTree](screenshots/scope.png "NavTree in action")
 
 ## Caveats
 * This a quick n' dirty proof of concept. The extension is using the free GitHub API quota. If you make heavy use of it, it may get blocked for a day. I'll add GitHub authentication sometime in the future to prevent this.
