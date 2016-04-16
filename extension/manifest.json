@@ -2,7 +2,7 @@
   "name": "NavTree for Github",
   "short_name": "Navtree-github",
   "author": "Dimas López Zurita (dimaslz) | me@dimaslz.io",
-  "version": "1.1.2",
+  "version": "1.1.5",
   "manifest_version": 2,
   "description": "NavTree for Github is a extension for improve the navigation between files on Github.",
   "web_accessible_resources": [
@@ -21,7 +21,7 @@
       ],
       "js": [
         "highlight.pack.js",
-        "jquery.min.js", 
+        "jquery.min.js",
         "script.js"
         ]
     }

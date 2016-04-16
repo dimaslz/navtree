@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }, function(items) {
     switcher.checked = items.active;
     document.querySelector('#type-form input[value="'+items.type+'"]').checked = true;
-    document.querySelector('#theme input[value="'+items.theme+'"]').checked    = true;
+    // document.querySelector('#theme input[value="'+items.theme+'"]').checked    = true;
   });
 
   var inputs = document.querySelectorAll('#type-form input');
@@ -67,4 +67,38 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
   }
+  
+
+  $('.message').hide();
+  $('#tokenForm').submit(function(e) {
+    console.log($(this).find('input')[0].value);
+    chrome.storage.sync.set({
+      token: $(this).find('input')[0].value
+    });
+    
+    $('#tokenForm').fadeOut('slow', function() {
+      $('.message').show();
+    })
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  
+  $('.message').on('click', function() {
+    $('.message').hide();
+    $('#tokenForm').show();
+  })
+  
+  chrome.storage.sync.get({
+    token: false
+  }, function(items) {
+    if(items.token) {
+      $('.message').hide();
+      $('#tokenForm').hide();
+      $('.token-exist-message').show();
+      $('.token-exist-message').on('click', function() {
+        $('.token-exist-message').hide();
+        $('#tokenForm').show();
+      });
+    }
+  });
 });

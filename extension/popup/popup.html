@@ -1,27 +1,49 @@
 <!DOCTYPE>
 <html>
-  <head>
-    <title>options</title>
-    <link rel="stylesheet" type="text/css" href="popup.css">
-    
-    <script src="popup.js"></script>
-  </head>
-  
-  <body>
-    <div class="popup-content">
-     <h1>NavTree Options</h1>
-     <div class="switch">
+
+<head>
+  <title>options</title>
+  <link rel="stylesheet" type="text/css" href="popup.css">
+
+  <script src="../jquery.min.js"></script>
+  <script src="popup.js"></script>
+</head>
+
+<body>
+  <div class="popup-content">
+    <h1>NavTree Options</h1>
+    <div class="switch">
       <input type="checkbox" id="switcher">
       <label for="switcher"></label>
       <span>Show NavTree</span>
     </div>
-     <fieldset>
-       <legend>Select type</legend>
-       <form id="type-form">
-         <input type="radio" name="navtreeType" value="overlay"> Overlay
-         <input type="radio" name="navtreeType" value="intogithub"> Into Github UI
-       </form>
-     </fieldset>
-    </div>
-  </body>
+    <fieldset>
+      <legend>Select type</legend>
+      <form id="type-form">
+        <input type="radio" name="navtreeType" value="overlay" /> Overlay
+        <input type="radio" name="navtreeType" value="intogithub" /> Into Github UI
+      </form>
+    </fieldset>
+
+    <fieldset id="access-token">
+      <legend>Allow read private repos</legend>
+      <div class="message">
+        Saved! Reload page or click here again if you want change
+      </div>
+      <div class="token-exist-message">
+        Already exist a token. Click here if you want to change it
+      </div>
+      <form id="tokenForm">
+        <input type="text" name="accessToken" value="" placeholder="Paste your personal access token" />
+        <button type="submit">Save</button>
+      </form>
+    </fieldset>
+  </div>
+
+  <footer>
+    Build by <a href="http://dimaslz.io" target="_blank">@dimaslz</a>
+    <a href="https://paypal.me/dimaslz" target="_blank">Buy me a beer or coffee</a>
+  </footer>
+</body>
+
 </html>
