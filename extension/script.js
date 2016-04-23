@@ -86,9 +86,13 @@ chrome.storage.sync.get({
             $('.loader-wrapper').hide();
             var content = '';
             if (/gif|png|jpg|jpeg/ig.test(node.path)) {
+              var contentImage = document.createElement('div');
+              contentImage.id = "content-image";
+              contentImage.style = 'width: 100% !important; height: 100%; display: flex';
               var img = document.createElement('img');
               img.src = 'data:image/png;base64,' + data.content
-              content = img;
+              contentImage.appendChild(img);
+              content = contentImage;
             } else {
               var pre = document.createElement('pre');
               var code = document.createElement('code');
@@ -96,9 +100,14 @@ chrome.storage.sync.get({
               content = pre;
             }
 
+
             $('#preview #preview-content').html(content);
             $('#preview #preview-title').text(node.path)
-            $('#preview #preview-content pre code').text(decodeURIComponent(escape(window.atob(data.content))))
+            if (/gif|png|jpg|jpeg/ig.test(node.path)) {
+              $('#preview #preview-content pre code').text(escape(window.atob(data.content)))
+            } else {
+              $('#preview #preview-content pre code').text(decodeURIComponent(escape(window.atob(data.content))))
+            }
 
             hljs.initHighlightingOnLoad();
             // hljs.configure({useBR: true});

@@ -1,3 +1,10 @@
 $('#editor').removeClass('overlay');
 $('body').removeClass('disable-scroll');
-$('.file-wrap table.files').hide();
+
+chrome.storage.sync.get({
+  active: false
+}, function(items) {
+  if(items.active) {
+    $('.file-wrap table.files').hide();
+  }
+});

@@ -29,6 +29,15 @@ document.addEventListener('DOMContentLoaded', function () {
   
   switcher.addEventListener('click', function() {
     if(this.checked) {
+      chrome.storage.sync.get({
+        type: 'overlay',
+      }, function(items) {
+        if(items.type === 'overlay') {
+          $('body').addClass('disable-scroll');
+        } else {
+          $('.file-wrap table.files').hide();
+        }
+      });
       chrome.tabs.executeScript(null, {
         file: "popup/show-editor.js"
       });

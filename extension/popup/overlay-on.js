@@ -1,3 +1,9 @@
 $('#editor').addClass('overlay');
 $('.file-wrap table.files').show();
-$('body').addClass('disable-scroll');
+chrome.storage.sync.get({
+  active: false
+}, function(items) {
+  if(items.active) {
+    $('body').addClass('disable-scroll');
+  }
+});
