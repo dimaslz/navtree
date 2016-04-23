@@ -12,7 +12,7 @@ This extension is saves you time when you want to take a peek at the repo code a
 ![NavTree in action screenshot 6](screenshots/screen6.png "NavTree in action")
 
 ##Version
-Current version 1.2.0
+Current version 1.3.0
 
 ## Setup 
 * Clone this and load the unpacked extension into Chrome or [install through the Chrome Web Store](https://chrome.google.com/webstore/detail/navtree-for-github/hehmfcekejdeohjjckmalfemepbbafbe)
