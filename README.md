@@ -7,9 +7,7 @@ This extension is saves you time when you want to take a peek at the repo code a
 
 ##Screenshots
 
-![NavTree in action screenshot 1](screenshots/screen1.png "NavTree in action")
-![NavTree in action screenshot 4](screenshots/screen4.png "NavTree in action")
-![NavTree in action screenshot 6](screenshots/screen6.png "NavTree in action")
+![NavTree in action](screenshots/navtreedemo.gif "NavTree in action")
 
 ##Version
 Current version 1.3.0

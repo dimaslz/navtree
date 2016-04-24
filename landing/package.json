@@ -1,0 +1,41 @@
+{
+  "name": "landing-navtree-for-github",
+  "version": "1.0.0",
+  "description": "Landing for NavTree for GitHub",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dimaslz/navtree.git"
+  },
+  "keywords": [
+    "navtree",
+    "chrome",
+    "extension",
+    "landing"
+  ],
+  "devDependencies": {
+    "bootstrap-sass": "^3.3.6",
+    "browser-sync": "^2.11.1",
+    "compass-mixins": "^0.12.7",
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.3.1",
+    "gulp-cssmin": "^0.1.7",
+    "gulp-gh-pages": "^0.5.4",
+    "gulp-sass": "^2.2.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uncss": "^1.0.4",
+    "sass": "^0.5.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "author": "Dimas López <me@dimaslz.io> (http://dimaslz.io)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dimaslz/navtree/issues"
+  },
+  "homepage": "https://github.com/dimaslz/navtree#readme"
+}

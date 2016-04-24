@@ -1,0 +1,97 @@
+// @import '../node_modules/compass-mixins/lib/compass';
+// @import '../node_modules/compass-mixins/lib/animation/core';
+// @import '../node_modules/compass-mixins/lib/compass/css3/user-interface';
+@import '../node_modules/bootstrap-sass/assets/stylesheets/bootstrap-sprockets';
+@import '../node_modules/bootstrap-sass/assets/stylesheets/bootstrap';
+
+// Include overrides
+@import 'bootstrap_overrides/overrides';
+
+// Helper style files
+@import 'helpers/helpers';
+@import 'helpers/mixins';
+@import 'helpers/variables';
+
+// Include module styles
+@import 'includes';
+
+.container {
+    width: 980px;
+    // max-width: none !important;
+}
+
+html {
+    min-height: 100%;
+}
+body {
+    background: white;
+    overflow-x: hidden;
+    position: relative;
+    margin: 0;
+    display: block;
+}
+
+h1 {
+    font-size: 6.5rem;
+    text-shadow: -1px 0 white, 0 1px white, 1px 0 white 0 -1px white;
+    margin: 0 0 30px 0;
+    text-align: center;
+}
+
+.header {
+    margin-bottom: 50px;
+}
+
+.subtitle {
+    font-size: 36px;
+    text-align: center;
+}
+
+.demo-box {
+    float: left;
+    width: 550px;
+    height: 328px;
+    .demo {
+        width: 420px;
+        margin: 0 auto;
+        margin: 25px 65px;
+    }
+    img {
+        width: 550px;
+        float: left;
+        position: absolute;
+    }
+}
+
+.description {
+    float: left;
+    width: 400px;
+    text-align: center;
+    .chrome-logo {
+        width: 200px;
+    }
+}
+
+.donation {
+    text-align: center;
+    span {
+        font-family: ArialMT;
+        font-size: 12px;
+        color: #444444;
+        text-align: center;
+        width: 100%;
+        display: block;
+    }
+    img {
+        width: 150px;
+    }
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    height: 40px;
+    padding: 10px 50px;
+    width: 100%;
+    background: white;
+}
