@@ -8,6 +8,20 @@ function setType(type) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  
+  chrome.tabs.getSelected(null, function(tab) {
+    var tabId = tab.id;
+    if(/https:\/\/*github.com\/.*?\/.*/ig.test(tab.url)) {
+      $('.not-available').hide();
+      $('.popup-content').show();
+    } else {
+      $('.not-available').show();
+      $('.popup-content').hide();
+    }
+  });
+    
+    
+    
   var switcher = document.querySelector('#switcher');
   var types = document.querySelectorAll('#type-form input');
   var themes = document.querySelectorAll('#theme input');

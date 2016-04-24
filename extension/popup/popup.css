@@ -1,6 +1,15 @@
+.not-available {
+  min-width: 320px;
+  height: 50px;
+  text-align: center;
+  padding: 5px;
+  font-size: 16px;
+}
+body, html {
+  float: left;
+}
 .popup-content {
-  width: 300px;
-  height: 220px;
+  min-width: 320px;
 }
 
 .popup-content fieldset {
