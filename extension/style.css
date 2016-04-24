@@ -140,17 +140,17 @@ body.disable-scroll {
 }
 
 #editor #tree ul li.close {
-  background: url('chrome-extension://@hehmfcekejdeohjjckmalfemepbbafbe/images/close.png') no-repeat;
+  background: url('chrome-extension://__MSG_@@extension_id__/images/close.png') no-repeat;
   background-position: 0px 3px;
 }
 
 #editor #tree ul li.open {
-  background: url('chrome-extension://@hehmfcekejdeohjjckmalfemepbbafbe/images/open.png') no-repeat;
+  background: url('chrome-extension://__MSG_@@extension_id__/images/open.png') no-repeat;
   background-position: 0px 3px;
 }
 
 #editor #tree ul li.file {
-  background: url('chrome-extension://@hehmfcekejdeohjjckmalfemepbbafbe/images/file.png') no-repeat;
+  background: url('chrome-extension://__MSG_@@extension_id__/images/file.png') no-repeat;
   background-position: 0px 3px;
 }
 
