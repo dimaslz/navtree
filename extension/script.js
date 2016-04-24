@@ -7,7 +7,7 @@ chrome.storage.sync.set({
 });
 
 chrome.storage.sync.get({
-      token: false
+  token: false
 }, function (items) {
   var accessToken = null;
   if (items.token) {
@@ -329,7 +329,7 @@ chrome.storage.sync.get({
             });
           }
         });
-
+        
         if (e.keyCode === 27 && $('#editor').hasClass('show-editor')) {
           $('#editor').removeClass('show-editor');
           chrome.storage.sync.get({

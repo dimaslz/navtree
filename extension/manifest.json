@@ -32,9 +32,12 @@
     "128": "images/icon128.png"
   },
   "browser_action": {
-    "default_title": "Set this page's color.",
-    "default_icon": "images/icon48.png",
-    "default_popup": "popup/popup.html"
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
   },
   "permissions": [
     "storage",
@@ -43,5 +46,9 @@
     "notifications",
     "http://*/",
     "https://*/"
-  ]
+  ],
+  "background": {
+    "persistent": false,
+    "scripts": ["jquery.min.js", "background.js"]
+  }
 }
