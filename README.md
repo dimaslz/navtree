@@ -32,13 +32,13 @@ To can use NavTree in private repos, this app needs a Token from Github [https:/
 * The code is nothing to be proud of, I just wanted to get this out there and see if anybody else finds this extension useful. 
 
 ## TODO
-* Add Github API integration.
-* Try to implement it for Bitbucket too.
-* Improve code.
-* Add file type icons on the tree view.
-* Center images.
+* ~~Add Github API integration.~~ √
+* ~~Try to implement it for Bitbucket too.~~ X
+* Improve code. (continue)
+* ~~Add file type icons on the tree view.~~ √
+* ~~Center images.~~ √
 * Open multiple files in different tabs.
-* Improve icon.
+* ~~Improve icon.~~ √
 
 ## Colaboration
 This project is open source, so please, feel free to send in pull request or file issues with feature requests, I will try to implement them and give you proper credit.
