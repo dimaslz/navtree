@@ -10,9 +10,9 @@ chrome.storage.sync.get({
   token: false
 }, function (items) {
   var accessToken = null;
-  if (items.token) {
-    accessToken = items.token;
-  }
+  // if (items.token) {
+  //   accessToken = items.token;
+  // }
   
   // console.log('dfasdfasdf', document.querySelectorAll('#type-form input'))
   var inputs = document.querySelectorAll('#type-form input');
@@ -114,9 +114,19 @@ chrome.storage.sync.get({
             $('pre code').each(function (i, block) {
               hljs.highlightBlock(block);
             });
+          }, error: function(xhr, ajaxOptions, thrownError) {
+            if(!accessToken) {
+              console.error('NavTree Error: ', thrownError, ' - You need a token access to avoid limit request and can use NavTree in private repositories. Look documentation: https://github.com/dimaslz/navtree');  
+            } else {
+              console.error('NavTree Error: ', thrownError, ' - Check your token access and fix credentials');
+            }
           },
           beforeSend: function(xhr, settings) {
-            xhr.setRequestHeader('Authorization', 'token '+accessToken)
+            if(accessToken) {
+              xhr.setRequestHeader('Authorization', 'token '+accessToken)
+            } else {
+              console.error('NavTree Tip: ', 'Add a token to can avoid limit request and use in private repos. Look documentation: https://github.com/dimaslz/navtree');
+            }
           }
         });
         e.stopPropagation();
@@ -348,9 +358,19 @@ chrome.storage.sync.get({
           });
         }
       })
+    }, error: function(xhr, ajaxOptions, thrownError) {
+      if(!accessToken) {
+        console.error('NavTree Error: ', thrownError, ' - You need a token access to avoid limit request and can use NavTree in private repositories. Look documentation: https://github.com/dimaslz/navtree');  
+      } else {
+        console.error('NavTree Error: ', thrownError, ' - Check your token access and fix credentials');
+      }
     },
     beforeSend: function(xhr, settings) {
-      xhr.setRequestHeader('Authorization', 'token '+accessToken)
+      if(accessToken) {
+        xhr.setRequestHeader('Authorization', 'token '+accessToken);
+      } else {
+        console.error('NavTree Tip: ', 'Add a token to can avoid limit request and use in private repos. Look documentation: https://github.com/dimaslz/navtree');
+      }
     }
   });
 });
