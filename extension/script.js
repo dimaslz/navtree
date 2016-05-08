@@ -2,6 +2,18 @@ var n = 0;
 var counter = 0;
 var collection = [];
 var editorVisible = false;
+var altPressed = false;
+var branches = [];
+var defaultBranch = 'master';
+
+var shaElement = $('.commit-tease-sha')[0].href;
+var sha = shaElement.match(/([A-Za-z0-9]{30,})$/ig)[0];
+var author = $('a[rel="author"]')[0].href.split('/').pop();
+var repo = $('a[data-pjax*="js-repo-pjax-container"]')[0].href.split('/').pop();
+var treeUrl = `https://api.github.com/repos/${author}/${repo}/git/trees/${sha}?recursive=1`;
+var branchesUrl = `https://api.github.com/repos/${author}/${repo}/branches`;
+var downloadUrl = `https://raw.githubusercontent.com/${author}/${repo}/${defaultBranch}/`;
+
 chrome.storage.sync.set({
   active: false
 });
@@ -10,16 +22,14 @@ chrome.storage.sync.get({
   token: false
 }, function (items) {
   var accessToken = null;
-  // if (items.token) {
-  //   accessToken = items.token;
-  // }
+  if (items.token) {
+    accessToken = items.token;
+  }
   
-  // console.log('dfasdfasdf', document.querySelectorAll('#type-form input'))
   var inputs = document.querySelectorAll('#type-form input');
   for (var i = 0; i < inputs.length; i++) {
     inputs[i].addEventListener('click', setType);
   }
-  // });
 
   /**
    * Arraytor
@@ -34,6 +44,17 @@ chrome.storage.sync.get({
     }
   }
 
+  /**
+   * set token for requests
+   */
+  function beforeSend(xhr, settings) {
+    if(accessToken) {
+      xhr.setRequestHeader('Authorization', 'token '+accessToken);
+    } else {
+      console.info('NavTree Tip: ', 'Add a token to can avoid limit request and use in private repos. Look documentation: https://github.com/dimaslz/navtree');
+    }
+  };
+  
   /**
    * Navigator
    */
@@ -70,70 +91,118 @@ chrome.storage.sync.get({
     }
   }
 
+  var altEventPressed = function() {
+    document.addEventListener('keydown', function(e) {
+      if(e.keyCode == 18) {
+        altPressed = true;
+      }
+    });
+
+    document.addEventListener('keyup', function(e) {
+      if(e.keyCode == 18) {
+        altPressed = false;
+      }
+    });
+  }
+  altEventPressed();
+
   /**
    * Add click event to files
    */
   function clickEvent(element, node) {
-    if (/[\.A-Za-z0-9-_]+\..*?$/ig.test(node.path) || !node.subNodes) {
-      element.addEventListener('click', function (e) {
-        $('.loader-wrapper').show();
-        var self = this
-        $.ajax({
-          url: self.getAttribute('url-data'),
-          dataType: 'json',
-          data: {},
-          success: function (data, status) {
-            $('.loader-wrapper').hide();
-            var content = '';
-            if (/gif|png|jpg|jpeg/ig.test(node.path)) {
-              var contentImage = document.createElement('div');
-              contentImage.id = "content-image";
-              contentImage.style = 'width: 100% !important; height: 100%; display: flex';
-              var img = document.createElement('img');
-              img.src = 'data:image/png;base64,' + data.content
-              contentImage.appendChild(img);
-              content = contentImage;
-            } else {
-              var pre = document.createElement('pre');
-              var code = document.createElement('code');
-              pre.appendChild(code);
-              content = pre;
-            }
-
-
-            $('#preview #preview-content').html(content);
-            $('#preview #preview-title').text(node.path)
-            if (/gif|png|jpg|jpeg/ig.test(node.path)) {
-              $('#preview #preview-content pre code').text(escape(window.atob(data.content)))
-            } else {
-              $('#preview #preview-content pre code').text(decodeURIComponent(escape(window.atob(data.content))))
-            }
-
-            hljs.initHighlightingOnLoad();
-            // hljs.configure({useBR: true});
-            $('pre code').each(function (i, block) {
-              hljs.highlightBlock(block);
-            });
-          }, error: function(xhr, ajaxOptions, thrownError) {
-            if(!accessToken) {
-              console.error('NavTree Error: ', thrownError, ' - You need a token access to avoid limit request and can use NavTree in private repositories. Look documentation: https://github.com/dimaslz/navtree');  
-            } else {
-              console.error('NavTree Error: ', thrownError, ' - Check your token access and fix credentials');
-            }
-          },
-          beforeSend: function(xhr, settings) {
-            if(accessToken) {
-              xhr.setRequestHeader('Authorization', 'token '+accessToken)
-            } else {
-              console.error('NavTree Tip: ', 'Add a token to can avoid limit request and use in private repos. Look documentation: https://github.com/dimaslz/navtree');
-            }
-          }
-        });
-        e.stopPropagation();
+    $(element).not('.close').hover(function() {
+      var button = $(this).find('a.button');
+      button.toggleClass('over');
+      button.on('click', function() {
+        downloadFile(downloadUrl+node.path, node.path.split('/').slice(-1));
       });
-    }
+    }, function() {
+      $(this).find('a.button').toggleClass('over');
+    });
+    
+    var link = element.querySelector('a.link');
+    link.addEventListener('click', function (e) {
+      var self = this;
+      
+      if (/[\.A-Za-z0-9-_]+\..*?$/i.test(node.path) || !node.subNodes) {
+        if(altPressed) {
+          console.log('dfasdfasd')
+          downloadFile(downloadUrl+node.path, node.path.split('/').slice(-1));
+        } else {
+          $('.loader-wrapper').show();
+          $.ajax({
+            url: self.getAttribute('url-data'),
+            dataType: 'json',
+            data: {},
+            success: function (data, status) {
+              $('.loader-wrapper').hide();
+              var content = '';
+              if (/gif|png|jpg|jpeg/i.test(node.path)) {
+                var contentImage = document.createElement('div');
+                contentImage.id = "content-image";
+                contentImage.style = 'width: 100% !important; height: 100%; display: flex';
+                var img = document.createElement('img');
+                img.src = 'data:image/*;base64,' + data.content
+                contentImage.appendChild(img);
+                content = contentImage;
+              } else {
+                var pre = document.createElement('pre');
+                var code = document.createElement('code');
+                pre.appendChild(code);
+                content = pre;
+              }
+              
+              var downloadButton = document.createElement('a');
+              downloadButton.className = 'button download';
+              downloadButton.setAttribute('download', node.path.split('/').slice(-1));
+              downloadButton.href = downloadUrl+node.path;
+
+              $('#preview #preview-content').html(content);
+              $('#preview #preview-title').text(node.path);
+              $('#preview #preview-title').append(downloadButton);
+              if (/gif|png|jpg|jpeg/i.test(node.path)) {
+                $('#preview #preview-content pre code').text(escape(window.atob(data.content)))
+              } else {
+                $('#preview #preview-content pre code').text(decodeURIComponent(escape(window.atob(data.content))))
+              }
+
+              hljs.initHighlightingOnLoad();
+              // hljs.configure({useBR: true});
+              $('pre code').each(function (i, block) {
+                hljs.highlightBlock(block);
+              });
+            }, error: function(xhr, ajaxOptions, thrownError) {
+              if(!accessToken) {
+                console.error('NavTree Error: ', thrownError, ' - You need a token access to avoid limit request and can use NavTree in private repositories. Look documentation: https://github.com/dimaslz/navtree');  
+              } else {
+                console.error('NavTree Error: ', thrownError, ' - Check your token access and fix credentials');
+              }
+            },
+            beforeSend: beforeSend
+          });
+          e.stopPropagation(); 
+        } 
+      } else {
+        $(self).parent('li').toggleClass('open');
+        $(self).parent('li').find('ul').eq(0).toggleClass('black')
+      }
+    });
   }
 
+  /**
+   * Download file
+   */
+  function downloadFile(url, filename) {
+    var element = document.createElement('a');
+    element.setAttribute('href', url);
+    element.setAttribute('download', filename);
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+  
+  
   /**
    * CreateTree
    */
@@ -150,24 +219,23 @@ chrome.storage.sync.get({
     for (n in treeNode) {
       // Create an <li> and <a> element
       li = document.createElement('li');
+      a = document.createElement('a');
+      a.className = 'link';
+      a.setAttribute('url-data', treeNode[n].url)
+      
       if (/[\.A-Za-z0-9-_]+\..*?$/ig.test(treeNode[n].path) || !treeNode[n].subNodes) {
-        li.className = 'file';
+        var cloud = document.createElement('a');
+        cloud.className = 'button file';
+        // cloud.href = downloadUrl+treeNode[n].path;
+        // cloud.setAttribute('download', treeNode[n].path.split('/').slice(-1));
+        li.appendChild(cloud);
       } else {
         li.className = 'close';
       }
-      a = document.createElement('a');
-      // a.href = '#';
-      a.setAttribute('url-data', treeNode[n].url)
-
-      clickEvent(a, treeNode[n]);
-
-      // Add the "key" text (eg. "Demo Sheet 1")
-      a.innerHTML = treeNode[n].path;
-      a.setAttribute('url-data', treeNode[n].url)
-
-      clickEvent(a, treeNode[n]);
-
+      a.innerHTML += treeNode[n].path.split('/').pop();
+      
       li.appendChild(a)
+      clickEvent(li, treeNode[n]);
 
       // If the current tree node child is an array...
       if (treeNode[n].subNodes instanceof Array) {
@@ -189,12 +257,6 @@ chrome.storage.sync.get({
       ul.appendChild(li);
     }
   }
-
-
-  var shaElement = $('.commit-tease-sha')[0].href;
-  var sha = shaElement.match(/([A-Za-z0-9]{30,})$/ig)[0];
-  var author = $('a[rel="author"]')[0].href.split('/').pop();
-  var repo = $('a[data-pjax*="js-repo-pjax-container"]')[0].href.split('/').pop();
 
   $.ajax({
     url: 'https://api.github.com/repos/' + author + '/' + repo + '/git/trees/' + sha + '?recursive=1',
@@ -240,26 +302,6 @@ chrome.storage.sync.get({
       document.body.appendChild(editorElement);
       // now, we need create tree navigator
       createTree(treeElement, collection)
-
-      // add over to li
-      var lis = document.querySelectorAll('#tree li');
-      for (var i = 0; i < lis.length; i++) {
-        lis[i].addEventListener('click', function (e) {
-          $(this).toggleClass('open');
-          $(this).find('ul').eq(0).toggleClass('black')
-          e.stopPropagation();
-        });
-
-        // lis[i].addEventListener('mouseenter', function(e) {
-        //   $(this).toggleClass('over');
-        //   e.stopPropagation();
-        // });
-        // lis[i].addEventListener('mouseleave', function(e) {
-        //   $(this).toggleClass('over');
-        //   e.stopPropagation();
-        // });
-      }
-
 
       /**
        * Bubble button
@@ -316,7 +358,6 @@ chrome.storage.sync.get({
       document.body.appendChild(bubble);
 
       document.addEventListener('keydown', function (e) {
-
         chrome.storage.sync.get({
           active: false
         }, function (items) {
@@ -365,12 +406,6 @@ chrome.storage.sync.get({
         console.error('NavTree Error: ', thrownError, ' - Check your token access and fix credentials');
       }
     },
-    beforeSend: function(xhr, settings) {
-      if(accessToken) {
-        xhr.setRequestHeader('Authorization', 'token '+accessToken);
-      } else {
-        console.error('NavTree Tip: ', 'Add a token to can avoid limit request and use in private repos. Look documentation: https://github.com/dimaslz/navtree');
-      }
-    }
+    beforeSend: beforeSend
   });
 });

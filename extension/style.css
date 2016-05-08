@@ -45,17 +45,21 @@ body.disable-scroll {
   border-bottom: 1px solid rgba(204, 204, 204, 0.4);
 }
 
-/*Div dentro del content-preview con este estilo*/
-    /*width: 100%;
-    height: 100%;
-    display: flex;*/
-    
-    /*
-    y la imagen de dentro:
-    margin: auto;
-    display: grid;
-    vertical-align: middle;
-    */
+#editor #preview #preview-title a.download {
+  position: absolute;
+  background: url("chrome-extension://dnonnbeiomdlhmbglfffkmcifnojbmfk/images/download2.png") 0px 0px no-repeat;
+  border: 0 !important;
+  padding: 8px;
+  margin: 2px;
+  right: 5px;
+  left: initial;
+  width: 32px;
+  height: 32px;
+}
+
+#editor #preview #preview-title a.download:hover {
+  opacity: 0.8;
+}
 
 #editor #preview #preview-content {
   height: calc(100% - 40px);
@@ -125,38 +129,45 @@ body.disable-scroll {
 #editor #tree ul li {
   margin: 0;
   padding: 0 12px;
-  /*display: table-footer-group;*/
   line-height: 20px;
   color: white;
   cursor: pointer;
   padding: 0px 15px;
   padding-left: 0;
   display: block;
-}
-
-#editor #tree ul li.file {
-  border: 0;
-  border-radius: 0;
+  position: relative;
 }
 
 #editor #tree ul li.close {
   background: url('chrome-extension://__MSG_@@extension_id__/images/close.png') no-repeat;
-  background-position: 0px 3px;
+  background-position: 0px 5px;
 }
 
 #editor #tree ul li.open {
   background: url('chrome-extension://__MSG_@@extension_id__/images/open.png') no-repeat;
-  background-position: 0px 3px;
+  background-position: 0px 6px;
 }
 
-#editor #tree ul li.file {
-  background: url('chrome-extension://__MSG_@@extension_id__/images/file.png') no-repeat;
-  background-position: 0px 3px;
+#editor #tree ul li .button.file {
+  position: absolute;
+  width: 16px;
+  background: url("chrome-extension://dnonnbeiomdlhmbglfffkmcifnojbmfk/images/download.png") 0px 0px no-repeat;
+  height: 16px;
+  border: 0 !important;
+  left: -5px;
+  padding: 8px;
+  margin: 2px;
+  display: none;
+}
+
+#editor #tree ul li .button.file.over{
+  display: block;
+  opacity: 0.8;
 }
 
 #editor #tree ul li a {
   display: block;
-  padding: 0 20px;
+  padding: 0 15px;
 }
 
 #editor #tree ul li a:hover {
