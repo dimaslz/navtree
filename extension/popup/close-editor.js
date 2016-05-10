@@ -1,5 +1,5 @@
 $('.file-wrap table.files').show();
-$('#editor').removeClass('show-editor');
+$('#nt-editor').removeClass('show-editor');
 
 chrome.storage.sync.get({
   type: 'overlay',

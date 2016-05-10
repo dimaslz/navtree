@@ -1,4 +1,4 @@
-$('#editor').addClass('overlay');
+$('#nt-editor').addClass('overlay');
 $('.file-wrap table.files').show();
 chrome.storage.sync.get({
   active: false

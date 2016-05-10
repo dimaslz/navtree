@@ -1,4 +1,4 @@
-$('#editor').removeClass('overlay');
+$('#nt-editor').removeClass('overlay');
 $('body').removeClass('disable-scroll');
 
 chrome.storage.sync.get({

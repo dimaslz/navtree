@@ -10,14 +10,24 @@ var shaElement = $('.commit-tease-sha')[0].href;
 var sha = shaElement.match(/([A-Za-z0-9]{30,})$/ig)[0];
 var author = $('a[rel="author"]')[0].href.split('/').pop();
 var repo = $('a[data-pjax*="js-repo-pjax-container"]')[0].href.split('/').pop();
+var tplTreeUrl = `https://api.github.com/repos/${author}/${repo}/git/trees/{sha}?recursive=1`;
 var treeUrl = `https://api.github.com/repos/${author}/${repo}/git/trees/${sha}?recursive=1`;
 var branchesUrl = `https://api.github.com/repos/${author}/${repo}/branches`;
 var downloadUrl = `https://raw.githubusercontent.com/${author}/${repo}/${defaultBranch}/`;
 
+String.prototype.supplant = function (o) {
+    return this.replace(/{([^{}]*)}/g,
+        function (a, b) {
+            var r = o[b];
+            return typeof r === 'string' || typeof r === 'number' ? r : a;
+        }
+    );
+};
+
 chrome.storage.sync.set({
   active: false
 });
-
+  
 chrome.storage.sync.get({
   token: false
 }, function (items) {
@@ -30,6 +40,36 @@ chrome.storage.sync.get({
   for (var i = 0; i < inputs.length; i++) {
     inputs[i].addEventListener('click', setType);
   }
+  
+  /**
+   * prepare treeUrl
+   */
+  var buildTreeUrl = function(sha) {
+    treeUrl = tplTreeUrl.supplant({ sha: sha });
+    return treeUrl;
+  };
+  
+  /**
+   * set token for requests
+   */
+  var beforeSend = function(xhr, settings) {
+    if(accessToken) {
+      xhr.setRequestHeader('Authorization', 'token '+accessToken);
+    } else {
+      console.info('NavTree Tip: ', 'Add a token to can avoid limit request and use in private repos. Look documentation: https://github.com/dimaslz/navtree');
+    }
+  };
+
+  /**
+   * set error options
+   */
+  var errorRequest = function(xhr, ajaxOptions, thrownError) {
+    if(!accessToken) {
+      console.error('NavTree Error: ', thrownError, ' - You need a token access to avoid limit request and can use NavTree in private repositories. Look documentation: https://github.com/dimaslz/navtree');  
+    } else {
+      console.error('NavTree Error: ', thrownError, ' - Check your token access and fix credentials');
+    }
+  };
 
   /**
    * Arraytor
@@ -42,23 +82,44 @@ chrome.storage.sync.get({
     } else {
       navigator(node, items[0]);
     }
-  }
-
+  };
+  
   /**
-   * set token for requests
+   * get branches
    */
-  function beforeSend(xhr, settings) {
-    if(accessToken) {
-      xhr.setRequestHeader('Authorization', 'token '+accessToken);
-    } else {
-      console.info('NavTree Tip: ', 'Add a token to can avoid limit request and use in private repos. Look documentation: https://github.com/dimaslz/navtree');
-    }
+  var getBranches = function() {
+    $.ajax({
+      url: branchesUrl,
+      dataType: 'json',
+      data: {},
+      success: function (data, status) {
+        console.log(data);
+        var select = document.querySelector('#branch-selector select');
+        data.map(function(value, index) {
+          var option = document.createElement('option');
+          option.innerHTML = value.name;
+          option.value = value.commit.sha;
+          if(value.name === defaultBranch) {
+            option.selected = 'selected';
+          }
+          select.appendChild(option);
+        });
+        
+        select.addEventListener('change', function(selected) {
+          console.log('dfasdfasdf', selected.target.value);
+          sha = selected.target.value;
+          getTree(sha);
+        })
+      },
+      error: errorRequest,
+      beforeSend: beforeSend
+    });
   };
   
   /**
    * Navigator
    */
-  function navigator(node, item) {
+  var navigator = function(node, item) {
     var re1 = new RegExp("^" + item.path + "/\\w+$", 'ig');
     var re2 = new RegExp("^" + item.path + "/[A-Za-z0-9-_]*\\..*?$", 'ig');
     if (re1.test(node.path) || re2.test(node.path)) {
@@ -109,15 +170,18 @@ chrome.storage.sync.get({
   /**
    * Add click event to files
    */
-  function clickEvent(element, node) {
+  var clickEvent = function(element, node) {
     $(element).not('.close').hover(function() {
       var button = $(this).find('a.button');
       button.toggleClass('over');
-      button.on('click', function() {
-        downloadFile(downloadUrl+node.path, node.path.split('/').slice(-1));
+      button.on('click', function(e) {
+        downloadFile(downloadUrl+node.path, node.path.split('/').slice(-1)[0]);
+        e.stopPropagation();
       });
     }, function() {
-      $(this).find('a.button').toggleClass('over');
+      var button = $(this).find('a.button');
+      button.toggleClass('over');
+      button.off('click');
     });
     
     var link = element.querySelector('a.link');
@@ -126,8 +190,8 @@ chrome.storage.sync.get({
       
       if (/[\.A-Za-z0-9-_]+\..*?$/i.test(node.path) || !node.subNodes) {
         if(altPressed) {
-          console.log('dfasdfasd')
-          downloadFile(downloadUrl+node.path, node.path.split('/').slice(-1));
+          downloadFile(downloadUrl+node.path, node.path.split('/').slice(-1)[0]);
+          e.stopPropagation();
         } else {
           $('.loader-wrapper').show();
           $.ajax({
@@ -171,13 +235,8 @@ chrome.storage.sync.get({
               $('pre code').each(function (i, block) {
                 hljs.highlightBlock(block);
               });
-            }, error: function(xhr, ajaxOptions, thrownError) {
-              if(!accessToken) {
-                console.error('NavTree Error: ', thrownError, ' - You need a token access to avoid limit request and can use NavTree in private repositories. Look documentation: https://github.com/dimaslz/navtree');  
-              } else {
-                console.error('NavTree Error: ', thrownError, ' - Check your token access and fix credentials');
-              }
             },
+            error: errorRequest,
             beforeSend: beforeSend
           });
           e.stopPropagation(); 
@@ -192,7 +251,7 @@ chrome.storage.sync.get({
   /**
    * Download file
    */
-  function downloadFile(url, filename) {
+  var downloadFile = function(url, filename) {
     var element = document.createElement('a');
     element.setAttribute('href', url);
     element.setAttribute('download', filename);
@@ -206,7 +265,7 @@ chrome.storage.sync.get({
   /**
    * CreateTree
    */
-  function createTree(domElement, treeNode) {
+  var createTree = function(domElement, treeNode) {
     var ul = document.createElement('ul'),
       a = document.createElement('a'),
       li,
@@ -258,83 +317,150 @@ chrome.storage.sync.get({
     }
   }
 
-  $.ajax({
-    url: 'https://api.github.com/repos/' + author + '/' + repo + '/git/trees/' + sha + '?recursive=1',
-    dataType: 'json',
-    data: {},
-    success: function (data, status) {
-      dataNodes = data.tree;
-      recursive(dataNodes);
+  var createLoader = function() {
+    // Loader
+    var loaderSpinner = document.createElement('div');
+    loaderSpinner.className = 'spinner';
+    var loader = document.createElement('div');
+    loader.className = 'loader';
+    loader.appendChild(loaderSpinner);
+    var loaderWrapper = document.createElement('div');
+    loaderWrapper.className = 'loader-wrapper';
+    loaderWrapper.appendChild(loader);
+    
+    return loaderWrapper;
+  };
+  
+  var getTree = function(sha) {
+    var editor = document.querySelector('#nt-editor');
+    if(editor) {
+      editor.remove();
+    }
+    
+    $.ajax({
+      url: buildTreeUrl(sha),
+      dataType: 'json',
+      data: {},
+      success: function (data, status) {
+        dataNodes = data.tree;
+        recursive(dataNodes);
 
-      // create editor element
-      var editorElement = document.createElement('div');
-      editorElement.id = 'editor';
+        // create editor element
+        var editorElement = document.createElement('div');
+        editorElement.id = 'nt-editor';
 
-      // create preview element 
-      var previewElement = document.createElement('div');
-      previewElement.id = 'preview';
-      var previewTitleElement = document.createElement('h1');
-      previewTitleElement.id = 'preview-title';
-      var previewContentElement = document.createElement('div');
-      previewContentElement.id = 'preview-content';
-      previewElement.appendChild(previewTitleElement);
-      previewElement.appendChild(previewContentElement);
-
-      // Loader
-      var div3 = document.createElement('div');
-      div3.className = 'spinner';
-      var div2 = document.createElement('div');
-      div2.className = 'loader';
-      div2.appendChild(div3);
-      var div1 = document.createElement('div');
-      div1.className = 'loader-wrapper';
-      div1.appendChild(div2);
-      previewElement.appendChild(div1);
+        // create preview element 
+        var previewElement = document.createElement('div');
+        previewElement.id = 'preview';
+        var previewTitleElement = document.createElement('h1');
+        previewTitleElement.id = 'preview-title';
+        var previewContentElement = document.createElement('div');
+        previewContentElement.id = 'preview-content';
+        previewElement.appendChild(previewTitleElement);
+        previewElement.appendChild(previewContentElement);
+        
+        previewElement.appendChild(createLoader());
 
 
-      // create tree nav element
-      var treeElement = document.createElement('div');
-      treeElement.id = 'tree';
-      editorElement.appendChild(treeElement);
-      editorElement.appendChild(previewElement);
+        // create tree nav element
+        var treeElement = document.createElement('div');
+        treeElement.id = 'tree';
+        
+        // TODO: branch selector
+        // var branchSelector = document.createElement('div');
+        // branchSelector.id = 'branch-selector';
+        // var selector = document.createElement('select');
+        // branchSelector.appendChild(selector);
+        // treeElement.appendChild(branchSelector);
+        editorElement.appendChild(treeElement);
+        editorElement.appendChild(previewElement);
 
-      // append editor to body    
-      document.body.appendChild(editorElement);
-      // now, we need create tree navigator
-      createTree(treeElement, collection)
+        // append editor to body    
+        document.body.appendChild(editorElement);
+        // now, we need create tree navigator
+        createTree(treeElement, collection)
+        // getBranches();
+        
+        /**
+         * Bubble button
+         */
+        var bubble = document.createElement('img');
+        bubble.src = chrome.extension.getURL("images/bubble.png");
+        bubble.id = 'nt-button-hide';
+        bubble.addEventListener('click', function (value, index) {
+          chrome.storage.sync.get({
+            active: false
+          }, function (items) {
+            if (!items.active) {
+              chrome.storage.sync.set({
+                active: true
+              });
 
-      /**
-       * Bubble button
-       */
-      var bubble = document.createElement('img');
-      bubble.src = chrome.extension.getURL("images/bubble.png");
-      bubble.id = 'button-hide';
-      bubble.addEventListener('click', function (value, index) {
-        chrome.storage.sync.get({
-          active: false
-        }, function (items) {
-          if (!items.active) {
-            chrome.storage.sync.set({
-              active: true
-            });
+              $('#nt-editor').addClass('show-editor');
+              $('.file-wrap table.files').before($('#nt-editor'))
 
-            $('#editor').addClass('show-editor');
-            $('.file-wrap table.files').before($('#editor'))
+              chrome.storage.sync.get({
+                type: 'overlay',
+                theme: 'dark'
+              }, function (items) {
+                if (items.type === 'overlay') {
+                  $('#nt-editor').addClass('overlay');
+                  $('body').addClass('disable-scroll');
+                } else {
+                  $('.file-wrap table.files').hide();
+                }
+              });
+            } else {
+              $('#nt-editor').removeClass('show-editor');
 
-            chrome.storage.sync.get({
-              type: 'overlay',
-              theme: 'dark'
-            }, function (items) {
-              if (items.type === 'overlay') {
-                $('#editor').addClass('overlay');
-                $('body').addClass('disable-scroll');
-              } else {
-                $('.file-wrap table.files').hide();
-              }
-            });
-          } else {
-            $('#editor').removeClass('show-editor');
+              chrome.storage.sync.get({
+                type: 'overlay',
+                theme: 'dark'
+              }, function (items) {
+                if (items.type === 'overlay') {
+                  $('body').removeClass('disable-scroll');
+                } else {
+                  $('.file-wrap table.files').show();
+                }
+              });
 
+              chrome.storage.sync.set({
+                active: false
+              });
+            }
+          }
+          );
+        });
+
+        $('.loader-wrapper').hide();
+        document.body.appendChild(bubble);
+
+        document.addEventListener('keydown', function (e) {
+          chrome.storage.sync.get({
+            active: false
+          }, function (items) {
+            if (!items.active && e.keyCode === 69 && e.ctrlKey) {
+              chrome.storage.sync.set({
+                active: true
+              });
+
+              $('#nt-editor').addClass('show-editor');
+              $('.file-wrap table.files').before($('#nt-editor'))
+
+              chrome.storage.sync.get({
+                type: 'overlay',
+                theme: 'dark'
+              }, function (items) {
+                if (items.type === 'overlay') {
+                  $('#nt-editor').addClass('overlay');
+                  $('body').addClass('disable-scroll');
+                }
+              });
+            }
+          });
+          
+          if (e.keyCode === 27 && $('#nt-editor').hasClass('show-editor')) {
+            $('#nt-editor').removeClass('show-editor');
             chrome.storage.sync.get({
               type: 'overlay',
               theme: 'dark'
@@ -350,62 +476,12 @@ chrome.storage.sync.get({
               active: false
             });
           }
-        }
-        );
-      });
-
-      $('.loader-wrapper').hide();
-      document.body.appendChild(bubble);
-
-      document.addEventListener('keydown', function (e) {
-        chrome.storage.sync.get({
-          active: false
-        }, function (items) {
-          if (!items.active && e.keyCode === 69 && e.ctrlKey) {
-            chrome.storage.sync.set({
-              active: true
-            });
-
-            $('#editor').addClass('show-editor');
-            $('.file-wrap table.files').before($('#editor'))
-
-            chrome.storage.sync.get({
-              type: 'overlay',
-              theme: 'dark'
-            }, function (items) {
-              if (items.type === 'overlay') {
-                $('#editor').addClass('overlay');
-                $('body').addClass('disable-scroll');
-              }
-            });
-          }
-        });
-        
-        if (e.keyCode === 27 && $('#editor').hasClass('show-editor')) {
-          $('#editor').removeClass('show-editor');
-          chrome.storage.sync.get({
-            type: 'overlay',
-            theme: 'dark'
-          }, function (items) {
-            if (items.type === 'overlay') {
-              $('body').removeClass('disable-scroll');
-            } else {
-              $('.file-wrap table.files').show();
-            }
-          });
-
-          chrome.storage.sync.set({
-            active: false
-          });
-        }
-      })
-    }, error: function(xhr, ajaxOptions, thrownError) {
-      if(!accessToken) {
-        console.error('NavTree Error: ', thrownError, ' - You need a token access to avoid limit request and can use NavTree in private repositories. Look documentation: https://github.com/dimaslz/navtree');  
-      } else {
-        console.error('NavTree Error: ', thrownError, ' - Check your token access and fix credentials');
-      }
-    },
-    beforeSend: beforeSend
-  });
+        })
+      },
+      error: errorRequest,
+      beforeSend: beforeSend
+    });
+  };
+  
+  getTree(sha);
 });

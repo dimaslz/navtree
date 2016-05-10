@@ -6,14 +6,14 @@ body.disable-scroll {
   display: block !important;
 }
 
-#editor {
+#nt-editor {
   width: 100%;
   height: 500px;
   display: none;
 }
 
 /*// OVERLAY*/
-#editor.overlay {
+#nt-editor.overlay {
   position: fixed;
   z-index: 16;
   top: 0;
@@ -21,7 +21,7 @@ body.disable-scroll {
   height: 100%;
 }
 
-#editor #preview {
+#nt-editor #preview {
     width: 70%;
     height: 100%;
     display: block;
@@ -33,7 +33,7 @@ body.disable-scroll {
     position: relative;
 }
 
-#editor #preview #preview-title {
+#nt-editor #preview #preview-title {
   font-size: 25px;
   padding-left: 10px;
   width: 100%;
@@ -45,7 +45,7 @@ body.disable-scroll {
   border-bottom: 1px solid rgba(204, 204, 204, 0.4);
 }
 
-#editor #preview #preview-title a.download {
+#nt-editor #preview #preview-title a.download {
   position: absolute;
   background: url("chrome-extension://dnonnbeiomdlhmbglfffkmcifnojbmfk/images/download2.png") 0px 0px no-repeat;
   border: 0 !important;
@@ -57,11 +57,11 @@ body.disable-scroll {
   height: 32px;
 }
 
-#editor #preview #preview-title a.download:hover {
+#nt-editor #preview #preview-title a.download:hover {
   opacity: 0.8;
 }
 
-#editor #preview #preview-content {
+#nt-editor #preview #preview-content {
   height: calc(100% - 40px);
   position: absolute;
   bottom: 0;
@@ -69,13 +69,13 @@ body.disable-scroll {
   background: rgba(248, 248, 248, 0.95);
 }
 
-#editor #priview #preview-content #content-image {
+#nt-editor #priview #preview-content #content-image {
   width: 100% !important;
   height: 100% !important;
   display: flex !important;
 }
 
-#editor #preview #preview-content #content-image img {
+#nt-editor #preview #preview-content #content-image img {
   max-width: 100%;
   padding: 10px;
   margin: auto;
@@ -83,17 +83,17 @@ body.disable-scroll {
   vertical-align: middle;
 }
 
-#editor #preview #preview-content pre {
+#nt-editor #preview #preview-content pre {
   height: 100%;
   background: none;
 }
 
-#editor #preview #preview-content pre code {
+#nt-editor #preview #preview-content pre code {
   height: 100%;
   background: none;
 }
 
-#editor #tree {
+#nt-editor #tree {
   width: 30%;
   max-width: 30%;
   background: rgba(248, 248, 248, 0.95);
@@ -105,11 +105,26 @@ body.disable-scroll {
   overflow-x: auto;
 }
 
-#editor #overlay {
+#nt-editor #tree #branch-selector {
+  width: 100%;
+  height: 35px;
+  display: block;
+}
+
+#nt-editor #tree #branch-selector select{
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  border: 1px solid #ddd;
+}
+
+
+#nt-editor #overlay {
   background: rgba(248, 248, 248, 0.95);
 }
 
-#editor #tree ul, #editor #tree ul ul {
+#nt-editor #tree ul, #nt-editor #tree ul ul {
   display: inline-table;
   width: 100%;
   list-style-type: none;
@@ -117,16 +132,16 @@ body.disable-scroll {
   padding: 0;
 }
    
-#editor #tree ul ul {
+#nt-editor #tree ul ul {
   margin-left: 10px;
   display: none;
 }
 
-#editor #tree ul:first-child ul {
+#nt-editor #tree ul:first-child ul {
   margin-left: 10px;
 }
 
-#editor #tree ul li {
+#nt-editor #tree ul li {
   margin: 0;
   padding: 0 12px;
   line-height: 20px;
@@ -138,17 +153,17 @@ body.disable-scroll {
   position: relative;
 }
 
-#editor #tree ul li.close {
+#nt-editor #tree ul li.close {
   background: url('chrome-extension://__MSG_@@extension_id__/images/close.png') no-repeat;
   background-position: 0px 5px;
 }
 
-#editor #tree ul li.open {
+#nt-editor #tree ul li.open {
   background: url('chrome-extension://__MSG_@@extension_id__/images/open.png') no-repeat;
   background-position: 0px 6px;
 }
 
-#editor #tree ul li .button.file {
+#nt-editor #tree ul li .button.file {
   position: absolute;
   width: 16px;
   background: url("chrome-extension://dnonnbeiomdlhmbglfffkmcifnojbmfk/images/download.png") 0px 0px no-repeat;
@@ -160,34 +175,34 @@ body.disable-scroll {
   display: none;
 }
 
-#editor #tree ul li .button.file.over{
+#nt-editor #tree ul li .button.file.over{
   display: block;
   opacity: 0.8;
 }
 
-#editor #tree ul li a {
+#nt-editor #tree ul li a {
   display: block;
   padding: 0 15px;
 }
 
-#editor #tree ul li a:hover {
+#nt-editor #tree ul li a:hover {
   text-decoration: underline;
   /*background: white;*/
 }
 
-#editor #tree .black {
+#nt-editor #tree .black {
   display: block;
 }
 
-#editor #tree ul li.over {
+#nt-editor #tree ul li.over {
   background: cornflowerblue !important;
 }
 
-.hide {
+#nt-editor .hide {
   display: none !important;
 }
 
-#button-hide {
+#nt-button-hide {
   position: fixed;
   cursor: pointer;
   right: 0;
@@ -198,7 +213,7 @@ body.disable-scroll {
 }
 
 /* LOADER */
-.loader-wrapper {
+#nt-editor .loader-wrapper {
   display: block;
   position: absolute;
   width: 100%;
@@ -208,7 +223,7 @@ body.disable-scroll {
   top: 0;
   right: 0;
 }
-.loader-wrapper .loader {
+#nt-editor .loader-wrapper .loader {
   width: 64px;
   height: 64px;
   position: absolute;
@@ -217,7 +232,7 @@ body.disable-scroll {
   left: 50%;
   margin-left: -32px;
 }
-.loader-wrapper .loader .spinner {
+#nt-editor .loader-wrapper .loader .spinner {
   width: 64px;
   height: 64px;
   display: block;
