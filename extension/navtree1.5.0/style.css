@@ -47,7 +47,7 @@ body.disable-scroll {
 
 #nt-editor #preview #preview-title a.download {
   position: absolute;
-  background: url("chrome-extension://__MSG_@@extension_id__/images/download2.png") 0px 0px no-repeat;
+  background: url("chrome-extension://dnonnbeiomdlhmbglfffkmcifnojbmfk/images/download2.png") 0px 0px no-repeat;
   border: 0 !important;
   padding: 8px;
   margin: 2px;
@@ -166,7 +166,7 @@ body.disable-scroll {
 #nt-editor #tree ul li .button.file {
   position: absolute;
   width: 16px;
-  background: url("chrome-extension://__MSG_@@extension_id__/images/download.png") 0px 0px no-repeat;
+  background: url("chrome-extension://dnonnbeiomdlhmbglfffkmcifnojbmfk/images/download.png") 0px 0px no-repeat;
   height: 16px;
   border: 0 !important;
   left: -5px;
