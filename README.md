@@ -10,7 +10,7 @@ This extension is saves you time when you want to take a peek at the repo code a
 ![NavTree in action](screenshots/navtreedemo.gif "NavTree in action")
 
 ##Version
-Current version 1.4.0
+Current version 1.5.1
 
 ## Setup 
 * Clone this and load the unpacked extension into Chrome or [install through the Chrome Web Store](https://chrome.google.com/webstore/detail/navtree-for-github/hehmfcekejdeohjjckmalfemepbbafbe)
@@ -19,6 +19,7 @@ Current version 1.4.0
 * Install the extension
 * Navigate to a GitHub repo.
 * Click the new icon in the bottom-right corner, click on extention icon or use the `CTRL+E` keyboard shortcut.
+* Download file doing `ALT+click` in file or doing click in cloud image
 * NavTree pops up
 * To close the overlay 
 * To exit, click on the icon again, click on extention icon to use manually or use `ESC`.
