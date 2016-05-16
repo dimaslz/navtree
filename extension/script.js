@@ -16,12 +16,12 @@ var branchesUrl = `https://api.github.com/repos/${author}/${repo}/branches`;
 var downloadUrl = `https://raw.githubusercontent.com/${author}/${repo}/${defaultBranch}/`;
 
 String.prototype.supplant = function (o) {
-    return this.replace(/{([^{}]*)}/g,
-        function (a, b) {
-            var r = o[b];
-            return typeof r === 'string' || typeof r === 'number' ? r : a;
-        }
-    );
+  return this.replace(/{([^{}]*)}/g,
+    function (a, b) {
+      var r = o[b];
+      return typeof r === 'string' || typeof r === 'number' ? r : a;
+    }
+  );
 };
 
 chrome.storage.sync.set({
@@ -94,7 +94,7 @@ chrome.storage.sync.get({
       data: {},
       success: function (data, status) {
         console.log(data);
-        var select = document.querySelector('#branch-selector select');
+        var select = document.querySelector('#nt-branch-selector-box select');
         data.map(function(value, index) {
           var option = document.createElement('option');
           option.innerHTML = value.name;
@@ -106,9 +106,26 @@ chrome.storage.sync.get({
         });
         
         select.addEventListener('change', function(selected) {
-          console.log('dfasdfasdf', selected.target.value);
           sha = selected.target.value;
-          getTree(sha);
+          $.ajax({
+            url: buildTreeUrl(sha),
+            dataType: 'json',
+            data: {},
+            success: function (data, status) {
+              collection = [];
+              dataNodes = data.tree;
+              recursive(dataNodes);
+
+              var treeElement = document.getElementById('tree');
+              var list = treeElement.querySelector('ul');
+              if(list) {
+                list.remove();
+                createTree(treeElement, collection)
+              }
+            },
+            error: errorRequest,
+            beforeSend: beforeSend
+          });
         })
       },
       error: errorRequest,
@@ -261,7 +278,6 @@ chrome.storage.sync.get({
     document.body.removeChild(element);
   };
   
-  
   /**
    * CreateTree
    */
@@ -301,16 +317,6 @@ chrome.storage.sync.get({
         // Recursively get this node's children, etc
         createTree(li, treeNode[n].subNodes);
       }
-      else {
-        // Otherwise just print the "value" text (eg. "Demo View 11")
-        // a = document.createElement('a');
-        // a.href = '#';
-
-        // Add the "key" text (eg. "Demo Sheet 1")
-        // a.innerHTML = treeNode[n].path;
-        // li.innerHTML = a.innerHTML;
-        // li.appendChild(a)
-      }
 
       // add li to ul
       ul.appendChild(li);
@@ -321,9 +327,11 @@ chrome.storage.sync.get({
     // Loader
     var loaderSpinner = document.createElement('div');
     loaderSpinner.className = 'spinner';
+    
     var loader = document.createElement('div');
     loader.className = 'loader';
     loader.appendChild(loaderSpinner);
+    
     var loaderWrapper = document.createElement('div');
     loaderWrapper.className = 'loader-wrapper';
     loaderWrapper.appendChild(loader);
@@ -427,9 +435,66 @@ chrome.storage.sync.get({
 
         // append editor to body    
         document.body.appendChild(editorElement);
+        
+        var branchSelectorBox = document.createElement('div');
+        branchSelectorBox.id = 'nt-branch-selector-box';
+        var branchSelector = document.createElement('select');
+        branchSelector.id = 'nt-branch-selector';
+        branchSelectorBox.appendChild(branchSelector);
+        treeElement.appendChild(branchSelectorBox);
+        getBranches();
         // now, we need create tree navigator
         createTree(treeElement, collection)
-        // getBranches();
+        
+        /**
+         * listen mouse
+         */
+        var allow = false;
+        var newWidth = 0;
+        var border = 1;
+        treeElement.addEventListener('mousemove', function(e) {
+          var w = treeElement.getBoundingClientRect().width;
+          var positionX = e.pageX - e.target.offsetLeft;
+          if(positionX === w - border) {
+            this.style.cursor = 'ew-resize';
+            allow = true;
+          } else {
+            this.style.cursor = 'default';
+            allow = false;
+          }
+        });
+        
+        var mouseDown = false;
+        treeElement.addEventListener('mousedown', (e) => {
+          var positionX = e.pageX - this.offsetLeft;
+          if(allow) {
+            mouseDown = true;
+          }
+        });
+        
+        var preview = document.querySelector('#nt-editor #preview');
+        document.body.addEventListener('mousemove', (e) => {
+          var size = e.pageX - treeElement.offsetLeft;
+          newWidth = size;
+          if(mouseDown) {
+            if(size < 150) {
+              size = 150;
+            }
+            treeElement.style.width = size+'px';
+            preview.style.width = 'calc(100% - '+size+'px)';
+          }
+        });
+        
+        document.body.addEventListener('mouseup', (e) => {
+          if(mouseDown && allow) {
+            if(newWidth < 150) {
+              newWidth = 150;
+            }
+            treeElement.style.width = newWidth +'px';
+            preview.style.width = 'calc(100% - '+newWidth+'px) !important';
+          }
+              mouseDown = false;
+        });
         
         createBubble();
 

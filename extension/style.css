@@ -22,10 +22,9 @@ body.disable-scroll {
 }
 
 #nt-editor #preview {
-    width: 70%;
+    width: calc(100% - 300px);
     height: 100%;
     display: block;
-    /*background: rgba(248, 248, 248, 0.8);*/
     background: none;
     color: white;
     overflow-x: auto;
@@ -94,8 +93,9 @@ body.disable-scroll {
 }
 
 #nt-editor #tree {
-  width: 30%;
-  max-width: 30%;
+  width: 300px;
+  min-width: 150px;
+  max-width: 100%;
   background: rgba(248, 248, 248, 0.95);
   height: 100%;
   float: left;
@@ -105,13 +105,13 @@ body.disable-scroll {
   overflow-x: auto;
 }
 
-#nt-editor #tree #branch-selector {
+#nt-editor #tree #nt-branch-selector-box {
   width: 100%;
   height: 35px;
   display: block;
 }
 
-#nt-editor #tree #branch-selector select{
+#nt-editor #tree #nt-branch-selector-box select{
   display: block;
   width: 100%;
   height: 100%;
