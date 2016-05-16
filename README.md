@@ -10,19 +10,21 @@ This extension is saves you time when you want to take a peek at the repo code a
 ![NavTree in action](screenshots/navtreedemo.gif "NavTree in action")
 
 ##Version
-Current version 1.5.1
+Current version 1.6.0
 
 ## Setup 
 * Clone this and load the unpacked extension into Chrome or [install through the Chrome Web Store](https://chrome.google.com/webstore/detail/navtree-for-github/hehmfcekejdeohjjckmalfemepbbafbe)
 
 ## How to use
-* Install the extension
+* Install the extension.
 * Navigate to a GitHub repo.
 * Click the new icon in the bottom-right corner, click on extention icon or use the `CTRL+E` keyboard shortcut.
-* Download file doing `ALT+click` in file or doing click in cloud image
-* NavTree pops up
-* To close the overlay 
+* Download file doing `ALT+click` in file or doing click in cloud image.
+* NavTree pops up.
+* To close the overlay.
 * To exit, click on the icon again, click on extention icon to use manually or use `ESC`.
+* Select branch doing click in selector over tree.
+* Resize tree column doing click in right border and drag and drop as you like.
 
 ## Allow private repos
 To can use NavTree in private repos, this app needs a Token from Github [https://github.com/settings/tokens](https://github.com/settings/tokens) with following scopes
@@ -40,6 +42,8 @@ To can use NavTree in private repos, this app needs a Token from Github [https:/
 * ~~Center images.~~ √
 * Open multiple files in different tabs.
 * ~~Improve icon.~~ √
+* ~~Select branch.~~ √
+* ~~Resize tree column.~~ √
 
 ## Colaboration
 This project is open source, so please, feel free to send in pull request or file issues with feature requests, I will try to implement them and give you proper credit.
