@@ -15,7 +15,7 @@ body.disable-scroll {
 /*// OVERLAY*/
 #nt-editor.overlay {
   position: fixed;
-  z-index: 16;
+  z-index: 999;
   top: 0;
   left: 0;
   height: 100%;
@@ -30,6 +30,10 @@ body.disable-scroll {
     overflow-x: auto;
     float: left;
     position: relative;
+
+    position: absolute;
+    right: 0;
+    z-index: 5;
 }
 
 #nt-editor #preview #preview-title {
@@ -103,6 +107,10 @@ body.disable-scroll {
   padding: 10px;
   overflow-y: auto;
   overflow-x: auto;
+
+  position: absolute;
+  left: 0;
+  z-index: 5;
 }
 
 #nt-editor #tree #nt-branch-selector-box {
@@ -131,7 +139,7 @@ body.disable-scroll {
   margin: 0;
   padding: 0;
 }
-   
+
 #nt-editor #tree ul ul {
   margin-left: 10px;
   display: none;
@@ -139,6 +147,13 @@ body.disable-scroll {
 
 #nt-editor #tree ul:first-child ul {
   margin-left: 10px;
+}
+
+#nt-editor #tree > ul {
+  display: table !important;
+  position: absolute;
+  left: 15px;
+  z-index: 1;
 }
 
 #nt-editor #tree ul li {
@@ -161,6 +176,7 @@ body.disable-scroll {
 #nt-editor #tree ul li.open {
   background: url('chrome-extension://__MSG_@@extension_id__/images/open.png') no-repeat;
   background-position: 0px 6px;
+  display: table !important;
 }
 
 #nt-editor #tree ul li .button.file {

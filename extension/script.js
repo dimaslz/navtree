@@ -13,6 +13,7 @@ var repo = $('a[data-pjax*="js-repo-pjax-container"]')[0].href.split('/').pop();
 var tplTreeUrl = `https://api.github.com/repos/${author}/${repo}/git/trees/{sha}?recursive=1`;
 var treeUrl = `https://api.github.com/repos/${author}/${repo}/git/trees/${sha}?recursive=1`;
 var branchesUrl = `https://api.github.com/repos/${author}/${repo}/branches`;
+var tplDownloadUrl = `https://raw.githubusercontent.com/${author}/${repo}/{branch}/`;
 var downloadUrl = `https://raw.githubusercontent.com/${author}/${repo}/${defaultBranch}/`;
 
 String.prototype.supplant = function (o) {
@@ -48,6 +49,20 @@ chrome.storage.sync.get({
     treeUrl = tplTreeUrl.supplant({ sha: sha });
     return treeUrl;
   };
+  
+  var buildDownloadUrl = function(branch) {
+    downloadUrl = tplDownloadUrl.supplant({ branch: branch });
+    return treeUrl;
+  };
+  
+  var getNameBranchBySHA = function(sha) {
+    var branches = document.querySelectorAll('#nt-branch-selector option');
+    for(var i=0; i<branches.length; i++) {
+      if(branches[i].value === sha) {
+        return defaultBranch = branches[i].innerText;
+      }
+    }
+  }
   
   /**
    * set token for requests
@@ -93,13 +108,12 @@ chrome.storage.sync.get({
       dataType: 'json',
       data: {},
       success: function (data, status) {
-        console.log(data);
         var select = document.querySelector('#nt-branch-selector-box select');
         data.map(function(value, index) {
           var option = document.createElement('option');
           option.innerHTML = value.name;
           option.value = value.commit.sha;
-          if(value.name === defaultBranch) {
+          if(value.sha === sha) {
             option.selected = 'selected';
           }
           select.appendChild(option);
@@ -107,6 +121,7 @@ chrome.storage.sync.get({
         
         select.addEventListener('change', function(selected) {
           sha = selected.target.value;
+          defaultBranch = getNameBranchBySHA(sha);
           $.ajax({
             url: buildTreeUrl(sha),
             dataType: 'json',
@@ -192,6 +207,9 @@ chrome.storage.sync.get({
       var button = $(this).find('a.button');
       button.toggleClass('over');
       button.on('click', function(e) {
+        
+        buildDownloadUrl(defaultBranch);
+        console.log('downloadUrl+node.path', downloadUrl+node.path)
         downloadFile(downloadUrl+node.path, node.path.split('/').slice(-1)[0]);
         e.stopPropagation();
       });
@@ -207,6 +225,7 @@ chrome.storage.sync.get({
       
       if (/[\.A-Za-z0-9-_]+\..*?$/i.test(node.path) || !node.subNodes) {
         if(altPressed) {
+          buildDownloadUrl(defaultBranch);
           downloadFile(downloadUrl+node.path, node.path.split('/').slice(-1)[0]);
           e.stopPropagation();
         } else {
@@ -354,6 +373,30 @@ chrome.storage.sync.get({
     return previewElement;    
   }
   
+  var generateTree = function(sha) {
+    $.ajax({
+      url: buildTreeUrl(sha),
+      dataType: 'json',
+      data: {},
+      success: function (data, status) {
+        collection = [];
+        dataNodes = data.tree;
+        recursive(dataNodes);
+
+        var treeElement = document.getElementById('tree');
+        var list = treeElement.querySelector('ul');
+        if(list) {
+          list.remove();
+        }
+        
+        createTree(treeElement, collection)
+        
+        $('.loader-wrapper').hide();
+      },
+      error: errorRequest,
+      beforeSend: beforeSend
+    });
+  }
   /**
    * Bubble button
    */
@@ -369,6 +412,20 @@ chrome.storage.sync.get({
           chrome.storage.sync.set({
             active: true
           });
+          
+          var currentBranch = document.querySelector('.branch-select-menu .select-menu-button .js-select-button').innerText;
+          var selectOptions = document.querySelectorAll('#nt-branch-selector option');
+          for(var i=0, len = selectOptions.length; i < len; i++) {
+            selectOptions[i].selected = false;
+            
+            var shaElement = $('.commit-tease-sha')[0].href;
+            var sha = shaElement.match(/([A-Za-z0-9]{30,})$/ig)[0];
+            defaultBranch = currentBranch;
+            if(selectOptions[i].value === sha && selectOptions[i].innerText === currentBranch) {
+              selectOptions[i].selected = 'selected';
+              generateTree(sha);
+            }
+          }
 
           $('#nt-editor').addClass('show-editor');
           $('.file-wrap table.files').before($('#nt-editor'))
@@ -409,142 +466,138 @@ chrome.storage.sync.get({
     document.body.appendChild(bubble);
   };
   
+  var resizeTree = function() {
+    var treeElement = document.getElementById('tree');
+    /**
+     * listen mouse
+     */
+    var allow = false;
+    var newWidth = 0;
+    var border = 1;
+    treeElement.addEventListener('mousemove', function(e) {
+      var w = treeElement.getBoundingClientRect().width;
+      var positionX = e.pageX - e.target.offsetLeft;
+      if(positionX === w - border) {
+        this.style.cursor = 'ew-resize';
+        allow = true;
+      } else {
+        this.style.cursor = 'default';
+        allow = false;
+      }
+    });
+    
+    var mouseDown = false;
+    treeElement.addEventListener('mousedown', (e) => {
+      var positionX = e.pageX - this.offsetLeft;
+      if(allow) {
+        mouseDown = true;
+      }
+    });
+    
+    var preview = document.querySelector('#nt-editor #preview');
+    document.body.addEventListener('mousemove', (e) => {
+      var size = e.pageX - treeElement.offsetLeft;
+      newWidth = size;
+      if(mouseDown) {
+        if(size < 150) {
+          size = 150;
+        }
+        treeElement.style.width = size+'px';
+        preview.style.width = 'calc(100% - '+size+'px)';
+      }
+    });
+    
+    document.body.addEventListener('mouseup', (e) => {
+      if(mouseDown && allow) {
+        if(newWidth < 150) {
+          newWidth = 150;
+        }
+        treeElement.style.width = newWidth +'px';
+        preview.style.width = 'calc(100% - '+newWidth+'px) !important';
+      }
+          mouseDown = false;
+    });
+  };
+  
+  var generateShortCuts = function() {
+    document.addEventListener('keydown', function (e) {
+      chrome.storage.sync.get({
+        active: false
+      }, function (items) {
+        if (!items.active && e.keyCode === 69 && e.ctrlKey) {
+          chrome.storage.sync.set({
+            active: true
+          });
+
+          $('#nt-editor').addClass('show-editor');
+          $('.file-wrap table.files').before($('#nt-editor'))
+
+          chrome.storage.sync.get({
+            type: 'overlay',
+            theme: 'dark'
+          }, function (items) {
+            if (items.type === 'overlay') {
+              $('#nt-editor').addClass('overlay');
+              $('body').addClass('disable-scroll');
+            }
+          });
+        }
+      });
+      
+      if (e.keyCode === 27 && $('#nt-editor').hasClass('show-editor')) {
+        $('#nt-editor').removeClass('show-editor');
+        chrome.storage.sync.get({
+          type: 'overlay',
+          theme: 'dark'
+        }, function (items) {
+          if (items.type === 'overlay') {
+            $('body').removeClass('disable-scroll');
+          } else {
+            $('.file-wrap table.files').show();
+          }
+        });
+
+        chrome.storage.sync.set({
+          active: false
+        });
+      }
+    });
+  };
+  
   var getTree = function(sha) {
     var editor = document.querySelector('#nt-editor');
     if(editor) {
       editor.remove();
     }
     
-    $.ajax({
-      url: buildTreeUrl(sha),
-      dataType: 'json',
-      data: {},
-      success: function (data, status) {
-        dataNodes = data.tree;
-        recursive(dataNodes);
-
-        // create tree nav element
-        var treeElement = document.createElement('div');
-        treeElement.id = 'tree';
-        
-        // create editor element
-        var editorElement = document.createElement('div');
-        editorElement.id = 'nt-editor';
-        editorElement.appendChild(treeElement);
-        editorElement.appendChild(createPreviewContent());
-
-        // append editor to body    
-        document.body.appendChild(editorElement);
-        
-        var branchSelectorBox = document.createElement('div');
-        branchSelectorBox.id = 'nt-branch-selector-box';
-        var branchSelector = document.createElement('select');
-        branchSelector.id = 'nt-branch-selector';
-        branchSelectorBox.appendChild(branchSelector);
-        treeElement.appendChild(branchSelectorBox);
-        getBranches();
-        // now, we need create tree navigator
-        createTree(treeElement, collection)
-        
-        /**
-         * listen mouse
-         */
-        var allow = false;
-        var newWidth = 0;
-        var border = 1;
-        treeElement.addEventListener('mousemove', function(e) {
-          var w = treeElement.getBoundingClientRect().width;
-          var positionX = e.pageX - e.target.offsetLeft;
-          if(positionX === w - border) {
-            this.style.cursor = 'ew-resize';
-            allow = true;
-          } else {
-            this.style.cursor = 'default';
-            allow = false;
-          }
-        });
-        
-        var mouseDown = false;
-        treeElement.addEventListener('mousedown', (e) => {
-          var positionX = e.pageX - this.offsetLeft;
-          if(allow) {
-            mouseDown = true;
-          }
-        });
-        
-        var preview = document.querySelector('#nt-editor #preview');
-        document.body.addEventListener('mousemove', (e) => {
-          var size = e.pageX - treeElement.offsetLeft;
-          newWidth = size;
-          if(mouseDown) {
-            if(size < 150) {
-              size = 150;
-            }
-            treeElement.style.width = size+'px';
-            preview.style.width = 'calc(100% - '+size+'px)';
-          }
-        });
-        
-        document.body.addEventListener('mouseup', (e) => {
-          if(mouseDown && allow) {
-            if(newWidth < 150) {
-              newWidth = 150;
-            }
-            treeElement.style.width = newWidth +'px';
-            preview.style.width = 'calc(100% - '+newWidth+'px) !important';
-          }
-              mouseDown = false;
-        });
-        
-        createBubble();
-
-        $('.loader-wrapper').hide();
-        document.addEventListener('keydown', function (e) {
-          chrome.storage.sync.get({
-            active: false
-          }, function (items) {
-            if (!items.active && e.keyCode === 69 && e.ctrlKey) {
-              chrome.storage.sync.set({
-                active: true
-              });
-
-              $('#nt-editor').addClass('show-editor');
-              $('.file-wrap table.files').before($('#nt-editor'))
-
-              chrome.storage.sync.get({
-                type: 'overlay',
-                theme: 'dark'
-              }, function (items) {
-                if (items.type === 'overlay') {
-                  $('#nt-editor').addClass('overlay');
-                  $('body').addClass('disable-scroll');
-                }
-              });
-            }
-          });
-          
-          if (e.keyCode === 27 && $('#nt-editor').hasClass('show-editor')) {
-            $('#nt-editor').removeClass('show-editor');
-            chrome.storage.sync.get({
-              type: 'overlay',
-              theme: 'dark'
-            }, function (items) {
-              if (items.type === 'overlay') {
-                $('body').removeClass('disable-scroll');
-              } else {
-                $('.file-wrap table.files').show();
-              }
-            });
-
-            chrome.storage.sync.set({
-              active: false
-            });
-          }
-        })
-      },
-      error: errorRequest,
-      beforeSend: beforeSend
-    });
+    // create tree nav element
+    var treeElement = document.createElement('div');
+    treeElement.id = 'tree';
+    
+    // create editor element
+    var editorElement = document.createElement('div');
+    editorElement.id = 'nt-editor';
+    editorElement.appendChild(treeElement);
+    editorElement.appendChild(createPreviewContent());
+    
+    // append editor to body    
+    document.body.appendChild(editorElement);
+    
+    
+    var branchSelectorBox = document.createElement('div');
+    branchSelectorBox.id = 'nt-branch-selector-box';
+    var branchSelector = document.createElement('select');
+    branchSelector.id = 'nt-branch-selector';
+    branchSelectorBox.appendChild(branchSelector);
+    treeElement.appendChild(branchSelectorBox);
+    getBranches();
+    
+    
+    resizeTree();
+    createBubble();
+    generateShortCuts();
+    
+    generateTree(sha);
   };
   
   getTree(sha);
