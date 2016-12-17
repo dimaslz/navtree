@@ -28,7 +28,7 @@ String.prototype.supplant = function (o) {
 chrome.storage.sync.set({
   active: false
 });
-  
+
 chrome.storage.sync.get({
   token: false
 }, function (items) {
@@ -36,12 +36,12 @@ chrome.storage.sync.get({
   if (items.token) {
     accessToken = items.token;
   }
-  
+
   var inputs = document.querySelectorAll('#type-form input');
   for (var i = 0; i < inputs.length; i++) {
     inputs[i].addEventListener('click', setType);
   }
-  
+
   /**
    * prepare treeUrl
    */
@@ -49,12 +49,12 @@ chrome.storage.sync.get({
     treeUrl = tplTreeUrl.supplant({ sha: sha });
     return treeUrl;
   };
-  
+
   var buildDownloadUrl = function(branch) {
     downloadUrl = tplDownloadUrl.supplant({ branch: branch });
     return treeUrl;
   };
-  
+
   var getNameBranchBySHA = function(sha) {
     var branches = document.querySelectorAll('#nt-branch-selector option');
     for(var i=0; i<branches.length; i++) {
@@ -63,7 +63,7 @@ chrome.storage.sync.get({
       }
     }
   }
-  
+
   /**
    * set token for requests
    */
@@ -80,7 +80,7 @@ chrome.storage.sync.get({
    */
   var errorRequest = function(xhr, ajaxOptions, thrownError) {
     if(!accessToken) {
-      console.error('NavTree Error: ', thrownError, ' - You need a token access to avoid limit request and can use NavTree in private repositories. Look documentation: https://github.com/dimaslz/navtree');  
+      console.error('NavTree Error: ', thrownError, ' - You need a token access to avoid limit request and can use NavTree in private repositories. Look documentation: https://github.com/dimaslz/navtree');
     } else {
       console.error('NavTree Error: ', thrownError, ' - Check your token access and fix credentials');
     }
@@ -98,7 +98,7 @@ chrome.storage.sync.get({
       navigator(node, items[0]);
     }
   };
-  
+
   /**
    * get branches
    */
@@ -118,7 +118,7 @@ chrome.storage.sync.get({
           }
           select.appendChild(option);
         });
-        
+
         select.addEventListener('change', function(selected) {
           sha = selected.target.value;
           defaultBranch = getNameBranchBySHA(sha);
@@ -147,7 +147,7 @@ chrome.storage.sync.get({
       beforeSend: beforeSend
     });
   };
-  
+
   /**
    * Navigator
    */
@@ -207,7 +207,7 @@ chrome.storage.sync.get({
       var button = $(this).find('a.button');
       button.toggleClass('over');
       button.on('click', function(e) {
-        
+
         buildDownloadUrl(defaultBranch);
         console.log('downloadUrl+node.path', downloadUrl+node.path)
         downloadFile(downloadUrl+node.path, node.path.split('/').slice(-1)[0]);
@@ -218,11 +218,11 @@ chrome.storage.sync.get({
       button.toggleClass('over');
       button.off('click');
     });
-    
+
     var link = element.querySelector('a.link');
     link.addEventListener('click', function (e) {
       var self = this;
-      
+
       if (/[\.A-Za-z0-9-_]+\..*?$/i.test(node.path) || !node.subNodes) {
         if(altPressed) {
           buildDownloadUrl(defaultBranch);
@@ -251,7 +251,7 @@ chrome.storage.sync.get({
                 pre.appendChild(code);
                 content = pre;
               }
-              
+
               var downloadButton = document.createElement('a');
               downloadButton.className = 'button download';
               downloadButton.setAttribute('download', node.path.split('/').slice(-1));
@@ -275,8 +275,8 @@ chrome.storage.sync.get({
             error: errorRequest,
             beforeSend: beforeSend
           });
-          e.stopPropagation(); 
-        } 
+          e.stopPropagation();
+        }
       } else {
         $(self).parent('li').toggleClass('open');
         $(self).parent('li').find('ul').eq(0).toggleClass('black')
@@ -296,7 +296,7 @@ chrome.storage.sync.get({
     element.click();
     document.body.removeChild(element);
   };
-  
+
   /**
    * CreateTree
    */
@@ -316,7 +316,7 @@ chrome.storage.sync.get({
       a = document.createElement('a');
       a.className = 'link';
       a.setAttribute('url-data', treeNode[n].url)
-      
+
       if (/[\.A-Za-z0-9-_]+\..*?$/ig.test(treeNode[n].path) || !treeNode[n].subNodes) {
         var cloud = document.createElement('a');
         cloud.className = 'button file';
@@ -327,7 +327,7 @@ chrome.storage.sync.get({
         li.className = 'close';
       }
       a.innerHTML += treeNode[n].path.split('/').pop();
-      
+
       li.appendChild(a)
       clickEvent(li, treeNode[n]);
 
@@ -346,20 +346,20 @@ chrome.storage.sync.get({
     // Loader
     var loaderSpinner = document.createElement('div');
     loaderSpinner.className = 'spinner';
-    
+
     var loader = document.createElement('div');
     loader.className = 'loader';
     loader.appendChild(loaderSpinner);
-    
+
     var loaderWrapper = document.createElement('div');
     loaderWrapper.className = 'loader-wrapper';
     loaderWrapper.appendChild(loader);
-    
+
     return loaderWrapper;
   };
-  
+
   var createPreviewContent = function() {
-    // create preview element 
+    // create preview element
     var previewElement = document.createElement('div');
     previewElement.id = 'preview';
     var previewTitleElement = document.createElement('h1');
@@ -369,10 +369,10 @@ chrome.storage.sync.get({
     previewElement.appendChild(previewTitleElement);
     previewElement.appendChild(previewContentElement);
     previewElement.appendChild(createLoader());
-    
-    return previewElement;    
+
+    return previewElement;
   }
-  
+
   var generateTree = function(sha) {
     $.ajax({
       url: buildTreeUrl(sha),
@@ -388,9 +388,9 @@ chrome.storage.sync.get({
         if(list) {
           list.remove();
         }
-        
+
         createTree(treeElement, collection)
-        
+
         $('.loader-wrapper').hide();
       },
       error: errorRequest,
@@ -412,12 +412,12 @@ chrome.storage.sync.get({
           chrome.storage.sync.set({
             active: true
           });
-          
+
           var currentBranch = document.querySelector('.branch-select-menu .select-menu-button .js-select-button').innerText;
           var selectOptions = document.querySelectorAll('#nt-branch-selector option');
           for(var i=0, len = selectOptions.length; i < len; i++) {
             selectOptions[i].selected = false;
-            
+
             var shaElement = $('.commit-tease-sha')[0].href;
             var sha = shaElement.match(/([A-Za-z0-9]{30,})$/ig)[0];
             defaultBranch = currentBranch;
@@ -462,10 +462,17 @@ chrome.storage.sync.get({
       }
       );
     });
-    
+
     document.body.appendChild(bubble);
   };
-  
+
+  function pauseEvent(e){
+      if(e.stopPropagation) e.stopPropagation();
+      if(e.preventDefault) e.preventDefault();
+      e.cancelBubble=true;
+      e.returnValue=false;
+      return false;
+  }
   var resizeTree = function() {
     var treeElement = document.getElementById('tree');
     /**
@@ -473,27 +480,44 @@ chrome.storage.sync.get({
      */
     var allow = false;
     var newWidth = 0;
-    var border = 1;
-    treeElement.addEventListener('mousemove', function(e) {
-      var w = treeElement.getBoundingClientRect().width;
-      var positionX = e.pageX - e.target.offsetLeft;
-      if(positionX === w - border) {
-        this.style.cursor = 'ew-resize';
-        allow = true;
-      } else {
-        this.style.cursor = 'default';
-        allow = false;
-      }
-    });
-    
+    var border = 5;
+
+	var eve = function(e) {
+		var w = treeElement.getBoundingClientRect().width;
+		var positionX = e.pageX - e.target.offsetLeft;
+		console.log('positionX', positionX)
+		if(positionX > w - border && positionX < w) {
+			this.style.borderRight = '3px solid red';
+			this.style.cursor = 'ew-resize';
+		} else {
+			this.style.borderRight = '1px solid black';
+			this.style.cursor = 'default';
+		}
+	}
+	treeElement.addEventListener('mouseover', eve);
+	treeElement.addEventListener('mouseleave', eve);
+
+
+    treeElement.addEventListener('mousemove', eve);
+	// var w = treeElement.getBoundingClientRect().width;
+	// var positionX = e.pageX - e.target.offsetLeft;
+	// if(positionX === w - border) {
+	// 	this.style.cursor = 'ew-resize';
+	// 	allow = true;
+	// } else {
+	// 	this.style.cursor = 'default';
+	// 	allow = false;
+	// }
+
     var mouseDown = false;
     treeElement.addEventListener('mousedown', (e) => {
       var positionX = e.pageX - this.offsetLeft;
       if(allow) {
         mouseDown = true;
       }
+	//   pauseEvent(e);
     });
-    
+
     var preview = document.querySelector('#nt-editor #preview');
     document.body.addEventListener('mousemove', (e) => {
       var size = e.pageX - treeElement.offsetLeft;
@@ -505,8 +529,9 @@ chrome.storage.sync.get({
         treeElement.style.width = size+'px';
         preview.style.width = 'calc(100% - '+size+'px)';
       }
+	  pauseEvent(e);
     });
-    
+
     document.body.addEventListener('mouseup', (e) => {
       if(mouseDown && allow) {
         if(newWidth < 150) {
@@ -518,7 +543,7 @@ chrome.storage.sync.get({
           mouseDown = false;
     });
   };
-  
+
   var generateShortCuts = function() {
     document.addEventListener('keydown', function (e) {
       chrome.storage.sync.get({
@@ -543,7 +568,7 @@ chrome.storage.sync.get({
           });
         }
       });
-      
+
       if (e.keyCode === 27 && $('#nt-editor').hasClass('show-editor')) {
         $('#nt-editor').removeClass('show-editor');
         chrome.storage.sync.get({
@@ -563,27 +588,27 @@ chrome.storage.sync.get({
       }
     });
   };
-  
+
   var getTree = function(sha) {
     var editor = document.querySelector('#nt-editor');
     if(editor) {
       editor.remove();
     }
-    
+
     // create tree nav element
     var treeElement = document.createElement('div');
     treeElement.id = 'tree';
-    
+
     // create editor element
     var editorElement = document.createElement('div');
     editorElement.id = 'nt-editor';
     editorElement.appendChild(treeElement);
     editorElement.appendChild(createPreviewContent());
-    
-    // append editor to body    
+
+    // append editor to body
     document.body.appendChild(editorElement);
-    
-    
+
+
     var branchSelectorBox = document.createElement('div');
     branchSelectorBox.id = 'nt-branch-selector-box';
     var branchSelector = document.createElement('select');
@@ -591,14 +616,14 @@ chrome.storage.sync.get({
     branchSelectorBox.appendChild(branchSelector);
     treeElement.appendChild(branchSelectorBox);
     getBranches();
-    
-    
+
+
     resizeTree();
     createBubble();
     generateShortCuts();
-    
+
     generateTree(sha);
   };
-  
+
   getTree(sha);
 });
