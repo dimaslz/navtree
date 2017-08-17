@@ -80,6 +80,7 @@ body.disable-scroll {
 
 #nt-editor #preview #preview-content #content-image img {
   max-width: 100%;
+  max-height: 100%;
   padding: 10px;
   margin: auto;
   display: grid;

@@ -269,6 +269,7 @@ chrome.storage.sync.get({
               hljs.initHighlightingOnLoad();
               // hljs.configure({useBR: true});
               $('pre code').each(function (i, block) {
+                console.log("BLOCK", block )
                 hljs.highlightBlock(block);
               });
             },
@@ -482,23 +483,23 @@ chrome.storage.sync.get({
     var newWidth = 0;
     var border = 5;
 
-	var eve = function(e) {
-		var w = treeElement.getBoundingClientRect().width;
-		var positionX = e.pageX - e.target.offsetLeft;
-		console.log('positionX', positionX)
-		if(positionX > w - border && positionX < w) {
-			this.style.borderRight = '3px solid red';
-			this.style.cursor = 'ew-resize';
-		} else {
-			this.style.borderRight = '1px solid black';
-			this.style.cursor = 'default';
-		}
-	}
-	treeElement.addEventListener('mouseover', eve);
-	treeElement.addEventListener('mouseleave', eve);
+	// var eve = function(e) {
+	// 	var w = treeElement.getBoundingClientRect().width;
+	// 	var positionX = e.pageX - e.target.offsetLeft;
+	// 	console.log('positionX', positionX)
+	// 	if(positionX > w - border && positionX < w) {
+	// 		this.style.borderRight = '3px solid red';
+	// 		this.style.cursor = 'ew-resize';
+	// 	} else {
+	// 		this.style.borderRight = '1px solid black';
+	// 		this.style.cursor = 'default';
+	// 	}
+	// }
+	// treeElement.addEventListener('mouseover', eve);
+	// treeElement.addEventListener('mouseleave', eve);
 
 
-    treeElement.addEventListener('mousemove', eve);
+    // treeElement.addEventListener('mousemove', eve);
 	// var w = treeElement.getBoundingClientRect().width;
 	// var positionX = e.pageX - e.target.offsetLeft;
 	// if(positionX === w - border) {

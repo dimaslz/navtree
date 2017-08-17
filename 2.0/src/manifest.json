@@ -6,37 +6,36 @@
   "manifest_version": 2,
   "description": "NavTree for Github is a extension for improve the navigation between files on Github.",
   "web_accessible_resources": [
-    "images/*.png",
-    "fonts/*",
+    "assets/*",
     "*.js"
   ],
-  "content_security_policy": "script-src 'self'; object-src 'self'",
+  "options_page": "./index.html",
+  // "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "content_security_policy": "connect-src * data: blob: filesystem:; default-src 'self'; script-src 'self' 'unsafe-eval'; object-src 'self'; style-src * 'unsafe-inline'; img-src 'self' data:; font-src *",
   "content_scripts": [
     {
       "all_frames": true,
       "matches": ["https://github.com/*/*"],
       "css": [
-        "github.css",
         "style.css"
       ],
       "js": [
         "highlight.pack.js",
-        "jquery.min.js",
-        "script.js"
-        ]
+        "index.js"
+      ]
     }
   ],
   "icons": {
-    "16": "images/icon16.png",
-    "48": "images/icon48.png",
-    "128": "images/icon128.png"
+    "16": "assets/images/icon16.png",
+    "48": "assets/images/icon48.png",
+    "128": "assets/images/icon128.png"
   },
   "browser_action": {
-    "default_popup": "popup/popup.html",
+    "default_popup": "popup.html",
     "default_icon": {
-      "16": "images/icon16.png",
-      "48": "images/icon48.png",
-      "128": "images/icon128.png"
+      "16": "assets/images/icon16.png",
+      "48": "assets/images/icon48.png",
+      "128": "assets/images/icon128.png"
     }
   },
   "permissions": [
@@ -46,9 +45,5 @@
     "notifications",
     "http://*/",
     "https://*/"
-  ],
-  "background": {
-    "persistent": false,
-    "scripts": ["jquery.min.js", "background.js"]
-  }
+  ]
 }
