@@ -403,7 +403,7 @@ export default class Github extends Component {
 										padding: "10px"
 									}}
 								>
-									<span>Github url: <a href={fileHtmlUrl}>{fileHtmlUrl}</a></span>
+									<span>Github url: <a href={fileHtmlUrl} target="_blank">{fileHtmlUrl}</a></span>
 									<span>Size: {formatBytes(fileSize)}</span>
 									{type === "file" ? <span>{fileLines} lines</span> : null}
 								</div> : null}

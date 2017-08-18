@@ -129,12 +129,15 @@ module.exports = {
 			template: './index.ejs',
 			minify: { collapseWhitespace: false }
 		}),
+		new HtmlWebpackPlugin({
+			template: './index.ejs',
+			minify: { collapseWhitespace: false }
+		}),
 		new CopyWebpackPlugin([
 			{ from: './assets/**/*', to: './' },
 			{ from: './manifest.json', to: './' },
 			{ from: './favicon.ico', to: './' },
-			{ from: './highlight.pack.js', to: './' },
-			{ from: '../build/index.html', to: './popup.html' }
+			{ from: './highlight.pack.js', to: './' }
 		])
 	]).concat(ENV==='production' ? [
 		new webpack.optimize.UglifyJsPlugin({

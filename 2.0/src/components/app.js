@@ -10,18 +10,40 @@ export default class App extends Component {
 	constructor() {
 		super();
 
+		this.state = {
+			isBubble: false
+		};
+
 		this._handleRoute = this._handleRoute.bind(this);
 	}
 
 	_handleRoute(e) {
-		// console.log("e", e);
+		console.log("e", e.url);
 		this.currentUrl = e.url;
+
+		const isBubble = [
+			"/index.html",
+			"/options.html",
+			"/popup.html"
+		].join(',').indexOf(e.url) === -1;
+
+		this.setState({
+			isBubble
+		});
 	}
 
 	render(props, state) {
+		const { path, isBubble } = state;
 
 		return (
-			<div id="app">
+			<div
+				id="app"
+				style={isBubble ? {
+					position: "absolute",
+					width: "0",
+					height: "0"
+				} : null}
+			>
 				<Router onChange={this._handleRoute}>
 					<Redirect path="/index.html" to="/options" />
 					<Options path="/options" />

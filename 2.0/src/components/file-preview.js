@@ -22,7 +22,6 @@ export default class FilePreview extends Component {
 		const codeContent = hljs.highlightAuto(this.props.filePreview);
 
 		codeContent.value = codeContent.value.replace(/\n/ig, "<br/>");
-		// const numberOfLines = codeContent.value.match(/\\n/ig).length +1;
 		const numberOfLines = codeContent.value.match(/<br\/>/ig).length +1;
 		this.props.doGetFileLines(numberOfLines);
 		this.setState({
@@ -41,7 +40,7 @@ export default class FilePreview extends Component {
 	}
 
 	render(props, state) {
-		const { filePreview, language, numberOfLines, linesCounterAnchor } = state;
+		const { filePreview, language, numberOfLines } = state;
 
 		if (!filePreview) return null;
 
@@ -55,7 +54,7 @@ export default class FilePreview extends Component {
 			}}>
 				<NumberLine
 					lines={numberOfLines}
-					ref={e => this.setState({linesCounterAnchor: e})}
+					ref={e => this.linesCounterAnchor = e}
 				/>
 				<span style={{
 					position: "relative",
@@ -63,8 +62,8 @@ export default class FilePreview extends Component {
 					flex: "1",
 					overflowY: "hidden",
 					overflowX: "scroll",
-					height: linesCounterAnchor ? `${linesCounterAnchor.base.clientHeight}px` : '0',
-					marginLeft: linesCounterAnchor ? `${linesCounterAnchor.base.clientWidth+10}px` : '0'
+					height: this.linesCounterAnchor ? `${this.linesCounterAnchor.base.clientHeight}px` : '0',
+					marginLeft: this.linesCounterAnchor ? `${this.linesCounterAnchor.base.clientWidth+10}px` : '0'
 				}}>
 					<pre
 						style={{
