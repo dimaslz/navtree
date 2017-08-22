@@ -1,7 +1,6 @@
 import { h, Component } from 'preact';
 import { Router } from 'preact-router';
 
-import Options from "./options";
 import Github from "./github";
 import Redirect from "./redirect";
 import Popup from "./popup";
@@ -18,12 +17,10 @@ export default class App extends Component {
 	}
 
 	_handleRoute(e) {
-		console.log("e", e.url);
 		this.currentUrl = e.url;
 
 		const isBubble = [
 			"/index.html",
-			"/options.html",
 			"/popup.html"
 		].join(',').indexOf(e.url) === -1;
 
@@ -33,7 +30,7 @@ export default class App extends Component {
 	}
 
 	render(props, state) {
-		const { path, isBubble } = state;
+		const { isBubble } = state;
 
 		return (
 			<div
@@ -45,8 +42,7 @@ export default class App extends Component {
 				} : null}
 			>
 				<Router onChange={this._handleRoute}>
-					<Redirect path="/index.html" to="/options" />
-					<Options path="/options" />
+					<Redirect path="/index.html" to="/popup.html" />
 					<Popup path="/popup.html" />
 					<Github default />
 				</Router>

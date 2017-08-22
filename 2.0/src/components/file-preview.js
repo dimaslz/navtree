@@ -10,8 +10,7 @@ export default class FilePreview extends Component {
 		this.state = {
 			filePreview: null,
 			language: null,
-			numberOfLines: 0,
-			linesCounterAnchor: 0
+			numberOfLines: 0
 		};
 	}
 
@@ -22,7 +21,8 @@ export default class FilePreview extends Component {
 		const codeContent = hljs.highlightAuto(this.props.filePreview);
 
 		codeContent.value = codeContent.value.replace(/\n/ig, "<br/>");
-		const numberOfLines = codeContent.value.match(/<br\/>/ig).length +1;
+		const match = codeContent.value.match(/<br\/>/ig);
+		const numberOfLines = match ? codeContent.value.match(/<br\/>/ig).length +1 : 1;
 		this.props.doGetFileLines(numberOfLines);
 		this.setState({
 			filePreview: codeContent.value,
@@ -60,8 +60,8 @@ export default class FilePreview extends Component {
 					position: "relative",
 					display: "flex",
 					flex: "1",
-					overflowY: "hidden",
-					overflowX: "scroll",
+					overflowX: "overlay",
+					minHeight: "100%",
 					height: this.linesCounterAnchor ? `${this.linesCounterAnchor.base.clientHeight}px` : '0',
 					marginLeft: this.linesCounterAnchor ? `${this.linesCounterAnchor.base.clientWidth+10}px` : '0'
 				}}>
@@ -73,7 +73,6 @@ export default class FilePreview extends Component {
 					>
 						<code
 							id="code"
-							ref={(code) => this.code = code}
 							class={language}
 							dangerouslySetInnerHTML={{__html: filePreview}}
 						/>

@@ -10,7 +10,7 @@
 
         io = io.listen(WEB_SOCKET_PORT);
 
-        watch('../**/*.*', function(file) {
+        watch('../src/**/*.*', function(file) {
             console.log('change detected', file.relative);
             io.emit('file.change', {});
         });

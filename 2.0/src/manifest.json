@@ -9,7 +9,7 @@
     "assets/*",
     "*.js"
   ],
-  "options_page": "./index.html",
+  // "options_page": "./index.html",
   // "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "content_security_policy": "connect-src * data: blob: filesystem:; default-src 'self'; script-src 'self' 'unsafe-eval'; object-src 'self'; style-src * 'unsafe-inline'; img-src 'self' data:; font-src *",
   "content_scripts": [
@@ -17,7 +17,7 @@
       "all_frames": true,
       "matches": ["https://github.com/*/*"],
       "css": [
-        "style.css"
+        // "style.css"
       ],
       "js": [
         "highlight.pack.js",
@@ -31,7 +31,7 @@
     "128": "assets/images/icon128.png"
   },
   "browser_action": {
-    "default_popup": "popup.html",
+    "default_popup": "index.html",
     "default_icon": {
       "16": "assets/images/icon16.png",
       "48": "assets/images/icon48.png",

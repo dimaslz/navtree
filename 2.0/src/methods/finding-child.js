@@ -1,7 +1,7 @@
 const findingChild = function(tree, id, child) {
 
-	return tree.map((node, i) => {
-		if (node.id == id) {
+	return tree.map((node) => {
+		if (node.id === id) {
 			node["child"] = child;
 			node["compressed"] = !node["compressed"];
 			return node;

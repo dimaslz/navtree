@@ -26,6 +26,7 @@ const lineStyle = css({
 export default class NumberLine extends Component {
 
 	render({lines}) {
+
 		return (
       <div
 				id="file-lines"

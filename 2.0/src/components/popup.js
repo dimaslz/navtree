@@ -2,7 +2,9 @@
 
 import { h, Component } from 'preact';
 
-import NavtreeLogo from '../assets/bubble.png';
+import navtreeLogo from '../assets/bubble.png';
+import { openSans } from '../common/fonts.variables';
+import { github } from '../common/colors.variables';
 
 export default class Popup extends Component {
 	constructor() {
@@ -10,7 +12,8 @@ export default class Popup extends Component {
 
 		this.state = {
 			enable: false,
-			token: ""
+			token: "",
+			tab: null
 		};
 
 		this._saveToken = this._saveToken.bind(this);
@@ -37,7 +40,8 @@ export default class Popup extends Component {
 
 			if (/https:\/\/*github.com\/.*?\/.*/ig.test(tab.url)) {
 				this.setState({
-					enable: true
+					enable: true,
+					tab
 				});
 			} else {
 				this.setState({
@@ -51,6 +55,10 @@ export default class Popup extends Component {
 		chrome.storage.sync.set({
 			token: this.inputToken.value
 		});
+
+		if (this.state.tab) {
+			chrome.tabs.executeScript(this.state.tab.id, {code: "window.location.reload();"});
+		}
 	}
 
 	render(props, state) {
@@ -63,10 +71,9 @@ export default class Popup extends Component {
 					height: "200px",
 					display: "flex",
 					padding: "10px",
-					fontFamily: "Open Sans"
+					fontFamily: openSans
 				}}
 			>
-
 				{enable ?
 					<span>
 						<h1
@@ -105,13 +112,14 @@ export default class Popup extends Component {
 								value={token}
 								ref={input => this.inputToken = input}
 								type="password"
-								placeholder="type here your github token"
+								placeholder="type/paste here your github token"
 							/>
 							<button
 								type="button"
 								style={{
-									background: "#efefef",
-									border: "0px"
+									background: github.secondaryBg,
+									border: `1px solid ${github.borderGrey}`,
+									cursor: "pointer"
 								}}
 								onClick={this._saveToken}
 							>
@@ -120,11 +128,11 @@ export default class Popup extends Component {
 						</span>
 
 						<span
-								style={{
-									fontSize: "11px",
-									marginTop: "10px",
-									display: "block"
-								}}
+							style={{
+								fontSize: "11px",
+								marginTop: "10px",
+								display: "block"
+							}}
 						>
 							To generate a Personal access token click <a href="https://github.com/dimaslz/navtree#allow-private-repos" target="_blank">here</a>
 						</span>
@@ -152,7 +160,7 @@ export default class Popup extends Component {
 						}}
 					>
 						<img
-							src={NavtreeLogo}
+							src={navtreeLogo}
 							style={{
 								width: "50px",
 								height: "50px"

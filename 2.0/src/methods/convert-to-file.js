@@ -4,6 +4,6 @@ const convertFile = function(node, data) {
 	}
 
 	return decodeURIComponent(escape(window.atob(data.content)));
-}
+};
 
 module.exports = convertFile;

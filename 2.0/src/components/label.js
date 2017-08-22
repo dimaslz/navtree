@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-export class Label extends Component {
+export default class Label extends Component {
 	constructor() {
 		super();
 

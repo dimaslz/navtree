@@ -129,10 +129,6 @@ module.exports = {
 			template: './index.ejs',
 			minify: { collapseWhitespace: false }
 		}),
-		new HtmlWebpackPlugin({
-			template: './index.ejs',
-			minify: { collapseWhitespace: false }
-		}),
 		new CopyWebpackPlugin([
 			{ from: './assets/**/*', to: './' },
 			{ from: './manifest.json', to: './' },

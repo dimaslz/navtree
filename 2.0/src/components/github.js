@@ -9,49 +9,51 @@ import {formatBytes} from '../lib';
 import FilePreview from "./file-preview";
 import ImagePreview from "./image-preview";
 import FilePreviewTitle from "./file-preview-title";
-import {Label} from "./label";
+import Label from "./label";
 import Bubble from "./bubble";
 import {findingChild, convertFile} from "../methods";
 import { css } from 'glamor';
 
-const author = "dimaslz";
-const repo = "navtree";
-const master = "master";
-const fileListRepo = `https://api.github.com/repos/${author}/${repo}/git/trees/%sha%`;
-const branchesUrl = `https://api.github.com/repos/${author}/${repo}/branches`;
-const downloadUrl = `https://raw.githubusercontent.com/${author}/${repo}/${master}/`;
-const fileUrl = `https://api.github.com/repos/${author}/${repo}/contents`;
+const fileListRepo = `https://api.github.com/repos/%%author%%/%%reponame%%/git/trees/%sha%`;
+const branchesUrl = `https://api.github.com/repos/%%author%%/%%reponame%%/branches`;
+const fileUrl = `https://api.github.com/repos/%%author%%/%%reponame%%/contents`;
 
 const arrowIcon = chrome.extension.getURL("assets/images/arrow.svg");
 const arrowIconHover = chrome.extension.getURL("assets/images/arrow_hover.svg");
+const INIT_STATE = {
+	showNavtreeOverlay: false,
+	tree: [],
+	branches: [],
+	branch: "",
+	author: "",
+	reponame: "",
+	code: "",
+	filePreview: null,
+	fileHtmlUrl: "",
+	fileDownloadUrl: "",
+	fileSize: "",
+	fileTitle: null,
+	type: null,
+	loading: false,
+	loadingTree: false,
+	authToken: null,
+	fileLines: 0
+};
 
-function getCurrentSha() {
-	const elm = document.querySelector(".commit-tease-sha");
-	return elm ? elm.href.split("/").pop() : null;
-}
+const errors = {
+	"403": "Message from Github API: The requests exceeded from your IP. " +
+		"Our recommendation, is to setup your Personal access token making " +
+		"that you can configure in your Github settings (https://github.com/settings/tokens) " +
+		"explained here: https://github.com/dimaslz/navtree#allow-private-repos and after, paste " +
+		"this token making click on our extension icon, and refresh.",
+	"401": "Your token is not valid. Try to setup a new one."
+};
+
 export default class Github extends Component {
 
 	constructor() {
 		super();
-		this.state = {
-			showNavtreeOverlay: false,
-			tree: [],
-			branches: [],
-			branch: "",
-			code: "",
-			filePreview: null,
-			fileHtmlUrl: "",
-			fileDownloadUrl: "",
-			fileSize: "",
-			fileTitle: null,
-			type: null,
-			loading: false,
-			authToken: null,
-			fileLines: 0,
-
-			currentBranch: null,
-			currentSha: null
-		};
+		this.state = INIT_STATE;
 
 		this._showNavtreeOverlay = this._showNavtreeOverlay.bind(this);
 		this._handleClick = this._handleClick.bind(this);
@@ -63,23 +65,24 @@ export default class Github extends Component {
 		this._getFileLines = this._getFileLines.bind(this);
 		this._doSwitchBranch = this._doSwitchBranch.bind(this);
 		this._getTree = this._getTree.bind(this);
+		this._contains = this._contains.bind(this);
+		this._openFile = this._openFile.bind(this);
 
 		this.path = '';
 	}
 
 	componentDidMount() {
-		this._checkAuthozation();
-
-		// const tabCodeSelector = document.querySelector(".reponav-item.selected");
-		// const isInCode = tabCodeSelector ? tabCodeSelector.innerText.trim().toLowerCase() === "code" : null;
-
-		// if (/https:\/\/*github.com\/.*?\/.*/gi.test(document.location.href) && isInCode) {
-		// 	chrome.browserAction.setIcon({ path: "assets/images/icon16.png" });
-		// } else {
-		// 	chrome.browserAction.setIcon({ path: "assets/images/icon16_off.png" });
-		// }
+		const author = document.querySelector(".repohead .repohead-details-container h1 [itemprop=author]").innerText;
+		const reponame = document.querySelector(".repohead .repohead-details-container h1 [itemprop=name]").innerText;
+		this.setState({
+			author,
+			reponame
+		});
 
 		const self = this;
+
+		this._checkAuthozation();
+
 		Mousetrap.bind(['command+e', 'ctrl+e'], () => {
 			self._showNavtreeOverlay();
 		});
@@ -87,6 +90,46 @@ export default class Github extends Component {
 
 	componentWillUnmount() {
 		document.body.style.overflow = "";
+		this.setState(INIT_STATE);
+	}
+
+	_openFile(filename) {
+		let path = filename.split('/');
+		path.shift();
+		const isFolder = path.length > 1;
+		console.log("path", path);
+		const self = this;
+		const interval = setInterval(() => {
+			if (document.querySelector(".info,.node")) {
+				clearInterval(interval);
+
+				const clickOnText = (text) => {
+					console.log("BB", isFolder , path.length, text)
+					if (isFolder && path.length === 0 && self.state.filePreview) {
+						return;
+					}
+					self._contains(".info,.node", text)[0].click();
+					setTimeout(() => {
+						if (path) {
+							const click = path.shift();
+							if (click) {
+								return clickOnText(click);
+							}
+						}
+					}, 500);
+				};
+
+				let text = path.shift();
+				clickOnText(text);
+			}
+		}, 500);
+	}
+
+	_contains(selector, text) {
+		const elements = document.querySelectorAll(selector);
+		return Array.prototype.filter.call(elements, (element) => {
+			return RegExp(text).test(element.textContent);
+		});
 	}
 
 	_checkAuthozation() {
@@ -107,22 +150,21 @@ export default class Github extends Component {
 			}
 
 			this._getBranches(authToken);
-			this.setState({
-				currentBranch: this._getCurrentBranch(),
-				currentSha: getCurrentSha()
-			});
 		});
 	}
 
 	_getCurrentBranch() {
-		const elm = document.querySelector(".branch-select-menu span");
+		// const elm = document.querySelector(".branch-select-menu span");
+		const elm = document.querySelector(".branch-select-menu button.select-menu-button span");
 		return elm ? elm.innerText : null;
 	}
 
 	_getFile(node) {
-		const { authToken, branch } = this.state;
+		const { authToken, branch, author, reponame } = this.state;
 
 		const type = /gif|png|jpg|jpeg/i.test(node.path) ? "image" : "file";
+
+		localStorage.setItem("navtree.lastFileSeen", node.filename);
 
 		this.setState({
 			filePreview: null,
@@ -136,12 +178,21 @@ export default class Github extends Component {
 		}
 
 		const request = new Request(
-			`${fileUrl}${node.filename}?ref=${branch.name}`,
+			`${fileUrl.replace('%%author%%', author).replace('%%reponame%%', reponame)}${node.filename}?ref=${branch.name}`,
 			{ headers }
 		);
 
 		fetch(request)
-			.then((response) => response.json())
+			.then((response) => {
+				if (response.status === 403) {
+					throw errors["403"];
+				}
+				if (response.status === 401) {
+					throw errors["401"];
+				}
+
+				return response.json();
+			})
 			.then((file) => {
 				this.setState({
 					fileTitle: node.path,
@@ -152,10 +203,14 @@ export default class Github extends Component {
 					fileDownloadUrl: file.download_url,
 					loading: false
 				});
+			})
+			.catch((err) => {
+				console.error(err);
 			});
 	}
 
 	_getBranches(authToken) {
+		const { author, reponame } = this.state;
 
 		const headers = new Headers();
 		headers.set('Content-Type', 'application/json');
@@ -163,18 +218,33 @@ export default class Github extends Component {
 			headers.set('Authorization', `token ${authToken}`);
 		}
 
+		const currentBranch = document.querySelector(".branch-select-menu button.select-menu-button span").innerText;
+
+
 		const request = new Request(
-			branchesUrl,
+			branchesUrl.replace('%%author%%', author).replace('%%reponame%%', reponame),
 			{ headers }
 		);
 
 		fetch(request)
-			.then((response) => response.json())
+			.then((response) => {
+				if (response.status === 403) {
+					throw errors["403"];
+				}
+				if (response.status === 401) {
+					throw errors["401"];
+				}
+
+				return response.json();
+			})
 			.then((branches) => {
 				this.setState({
 					branches,
-					branch: branches[0]
+					branch: branches.find(b => b.name === currentBranch) || branches[0]
 				});
+			})
+			.catch((err) => {
+				console.error(err);
 			});
 	}
 
@@ -189,15 +259,20 @@ export default class Github extends Component {
 
 		if (this.state.showNavtreeOverlay) {
 			document.body.style.overflow = "hidden";
+			this._getTree();
+			const lastFileSeen = localStorage.getItem("navtree.lastFileSeen");
+			console.log("items", lastFileSeen)
+			if (lastFileSeen) {
+				this._openFile(lastFileSeen);
+			}
+
 		} else {
 			document.body.style.overflow = "";
 		}
-
-		this._getTree();
 	}
 
 	_getTree() {
-		const { authToken, branch } = this.state;
+		const { authToken, branch, author, reponame } = this.state;
 		const self = this;
 
 		const headers = new Headers();
@@ -207,27 +282,48 @@ export default class Github extends Component {
 		}
 
 		const request = new Request(
-			fileListRepo.replace("%sha%", branch.commit.sha),
+			fileListRepo.replace('%%author%%', author).replace('%%reponame%%', reponame).replace("%sha%", branch.commit.sha),
 			{ headers }
 		);
 
+		this.setState({
+			loadingTree: true
+		});
+
 		fetch(request)
-			.then((response) => response.json())
+			.then((response) => {
+				if (response.status === 403) {
+					throw errors.limitRequests;
+				}
+				if (response.status === 401) {
+					throw errors["401"];
+				}
+
+				return response.json();
+			})
 			.then(({tree}) => {
 				tree = tree.map(t => {
 					t["id"] = uniqueid();
 					return t;
 				});
-				this.setState({ tree });
-				Mousetrap.bind("esc", () => {
-					self.setState({ showNavtreeOverlay: !self.state.showNavtreeOverlay });
-					document.body.style.overflow = "";
+				this.setState({
+					tree,
+					loadingTree: false
 				});
+				Mousetrap.bind("esc", () => {
+					if (self.state.showNavtreeOverlay) {
+						self.setState({ showNavtreeOverlay: !self.state.showNavtreeOverlay });
+						document.body.style.overflow = "";
+					}
+				});
+			})
+			.catch((err) => {
+				console.error(err);
 			});
 	}
 
 	_handleClick(node) {
-		const { authToken } = this.state;
+		const { authToken, author, reponame } = this.state;
 		const headers = new Headers();
 		headers.set('Content-Type', 'application/json');
 		if (authToken) {
@@ -235,12 +331,21 @@ export default class Github extends Component {
 		}
 
 		const request = new Request(
-			fileListRepo.replace("%sha%", node.sha),
+			fileListRepo.replace('%%author%%', author).replace('%%reponame%%', reponame).replace("%sha%", node.sha),
 			{ headers }
 		);
 
 		fetch(request)
-			.then((response) => response.json())
+			.then((response) => {
+				if (response.status === 403) {
+					throw errors.limitRequests;
+				}
+				if (response.status === 401) {
+					throw errors["401"];
+				}
+
+				return response.json();
+			})
 			.then(({tree}) => {
 				tree = tree.map(t => {
 					t["id"] = uniqueid();
@@ -248,6 +353,9 @@ export default class Github extends Component {
 				});
 				const newTree = findingChild(this.state.tree, node.id, tree);
 				this.setState({ tree: newTree });
+			})
+			.catch((err) => {
+				console.error(err);
 			});
 	}
 
@@ -285,6 +393,8 @@ export default class Github extends Component {
 			showNavtreeOverlay,
 			tree,
 			loading,
+			loadingTree,
+			branch,
 			branches,
 			filePreview,
 			fileSize,
@@ -303,6 +413,7 @@ export default class Github extends Component {
 						id="nt_overlay"
 						style={{
 							width: "100%",
+							minWidth: "1020px",
 							minHeight: "100%",
 							height: "100%",
 							position: "fixed",
@@ -365,7 +476,7 @@ export default class Github extends Component {
 										id="nt_tree-branch-selector"
 									>
 										{branches.map(
-											(branch) => <option value={branch.name}>{branch.name}</option>
+											(b) => <option selected={b.name === branch.name} value={b.name}>{b.name}</option>
 										)}
 									</select>
 								</div>
@@ -375,9 +486,26 @@ export default class Github extends Component {
 										flex: "1",
 										overflow: "auto",
 										height: "100%",
-										padding: "10px"
+										padding: "10px",
+										position: "relative"
 									}}
 								>
+									{loadingTree ? <div
+										style={{
+											position: "absolute",
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "center",
+											left: "0",
+											top: "0",
+											width: "100%",
+											height: "100%",
+											zIndex: "1",
+											background: "rgba(255, 255, 255, 0.7)"
+										}}
+									>
+										loading...
+									</div> : null}
 									{this._child(tree)}
 								</div>
 
@@ -432,12 +560,24 @@ export default class Github extends Component {
 										{loading ? <h6>Loading...</h6> :
 											<span style={{ textAlign: "center" }}>
 												<h1>Navtree</h1>
-												<h4>Tree navigator for Github</h4>
+												<h2>Tree navigator for Github</h2>
 												<span
 													style={{
-														marginTop: "50px"
+														marginTop: "50px",
+														display: "block",
+														fontSize: "14px"
 													}}
 												>Select any file from left tree view</span>
+
+												<span
+													style={{
+														display: "block",
+														marginTop: "50px",
+														fontSize: "12px"
+													}}
+												>
+													Press <code style={{ fontWeight: "600" }}>ESC</code>, <code style={{ fontWeight: "600" }}>CMD+E/CTRL+E</code> or click on <code style={{ fontWeight: "600" }}>Bubble</code> again to close Navtree.
+												</span>
 											</span>
 										}
 									</span>

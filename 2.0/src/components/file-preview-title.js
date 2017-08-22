@@ -2,6 +2,8 @@
 import { h, Component } from 'preact';
 import { css } from 'glamor';
 
+import { github } from '../common/colors.variables';
+
 const downloadIcon = chrome.extension.getURL("assets/images/download.svg");
 const downloadIconHover = chrome.extension.getURL("assets/images/download_hover.svg");
 
@@ -18,8 +20,8 @@ export default class FilePreviewTitle extends Component {
 					alignItems: "center",
 					fontSize: "20px",
 					fontWeight: "200",
-					backgroundColor: "#24292e",
-					color: "rgba(255,255,255,0.75)",
+					backgroundColor: github.bgDark,
+					color: github.textWhite,
 					lineHeight: "30px",
 					height: "50px"
 				}}>
