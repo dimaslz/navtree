@@ -1,3 +1,5 @@
+# DEPRECATED, is not planned any update
+
 [![Analytics](https://ga-beacon.appspot.com/UA-75897819-1/navtree/readme)](https://github.com/dimaslz/navtree)
 
 #NavTree for Github
